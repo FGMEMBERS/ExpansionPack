@@ -704,19 +704,102 @@ var AbstractProducer = {
         return {
             parents: [AbstractProducer, FuelComponent.new("producer-" ~ name)]
         };
+    },
+
+    prepare_add_fuel_flow: func (flow) {
+        die("Illegal call to AbstractProducer.prepare_add_fuel_flow: provider cannot consume fuel");
+    },
+
+    execute_fuel_flow: func {
+        # No operation
     }
 
 };
 
 var AirRefuelProducer = {
 
-    new: func (name) {
-        return {
-            parents: [AirRefuelProducer, AbstractProducer.new("air-refuel-" ~ name)]
-        };
-    }
+    # A producer that produces fuel based on the flow rate provided by
+    # a tanker.
+    #
+    # Since an AirRefuelProducer is a passive component, you need to attach
+    # it to a pump in order to make it produce fuel.
 
-    # TODO Implement
+    new: func (name, probe) {
+        # Create a new instance of AirRefuelProducer.
+        #
+        # probe: A function f() that returns the receivable flow (gal/s)
+        #        that can be pumped into the system. It must return a value
+        #        that is greater than or equal to 0.
+
+        if (typeof(probe) != "func") {
+            die("AirRefuelProducer.new: probe must be a function");
+        }
+
+        var m = {
+            parents: [AirRefuelProducer, AbstractProducer.new("air-refuel-" ~ name)],
+            probe:   probe
+        };
+        m.refuel_contact = props.globals.initNode("/systems/refuel/contact", 0, "BOOL");
+        m.ai_models = props.globals.getNode("/ai/models", 1);
+        return m;
+    },
+
+    prepare_subtract_fuel_flow: func (flow) {
+        assert(debug.isnan(flow) != 1.0);
+        assert(flow >= 0.0);
+
+        var received_flow = min(me._get_receivable_fuel_flow(), flow);
+
+        debug.dump("Receiving " ~ received_flow ~ " gal/s of fuel");
+        return received_flow;
+    },
+
+    _get_receivable_fuel_flow: func {
+        if (!getprop("/sim/ai/enabled")) {
+            return 0.0;
+        }
+
+        var tanker = nil;
+        var type = getprop("/systems/refuel/type");
+
+        # Check for contact with tanker aircraft
+        var ac = me.ai_models.getChildren("tanker");
+        var mp = me.ai_models.getChildren("multiplayer");
+
+        # Collect a list of tankers that we are in contact with
+        foreach (var a; ac ~ mp) {
+            if (!a.getNode("valid", 1).getValue()
+             or !a.getNode("tanker", 1).getValue()
+             or !a.getNode("refuel/contact", 1).getValue()
+             or type != a.getNode("refuel/type", 1).getValue()) {
+                continue;
+            }
+
+            # TODO Override if distance to drogue/boom is closer than the current tanker
+            tanker = a;
+        }
+
+        var refueling = getprop("/systems/refuel/serviceable") and tanker != nil;
+
+        if (getprop("/systems/refuel/report-contact")) {
+            if (refueling and !me.refuel_contact.getValue()) {
+                setprop("/sim/messages/copilot", "Engage");
+            }
+            if (!refueling and me.refuel_contact.getValue()) {
+                setprop("/sim/messages/copilot", "Disengage");
+            }
+        }
+        me.refuel_contact.setBoolValue(refueling);
+
+        if (getprop("/sim/freeze/fuel") or !refueling) {
+            return 0.0;
+        }
+
+        var flow = me.probe(tanker);
+
+        assert(flow >= 0.0);
+        return flow;
+    }
 
 };
 
