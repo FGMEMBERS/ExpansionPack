@@ -461,10 +461,10 @@ var Manifold = {
 
         me.source_subtracted = 1.0;
 
-        flow = flow / me.total_flow_sinks * min(flow, me.transferable_flow);
+        flow = flow / me.total_flow_sinks * me.transferable_flow;
 
         var usable_flow = 0.0;
-        foreach (var source; me.sources.vector) {
+        foreach (var tuple; me.sources.vector) {
             var source_flow = tuple[1] / me.total_flow_sources * flow;
             usable_flow += me.sources.vector[tuple[0]].prepare_subtract_fuel_flow(source_flow);
         }
@@ -483,7 +483,7 @@ var Manifold = {
 
         me.sink_added = 1.0;
 
-        flow = flow / me.total_flow_sources * min(flow, me.transferable_flow);
+        flow = flow / me.total_flow_sources * me.transferable_flow;
 
         var usable_flow = 0.0;
         foreach (var tuple; me.sinks_flow.vector) {
