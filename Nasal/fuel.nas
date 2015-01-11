@@ -762,7 +762,7 @@ var AirRefuelProducer = {
 
     execute_fuel_flow: func {
         if (me.provided_gal_us != nil) {
-            debug.dump("Receiving " ~ me.provided_gal_us ~ " gal/s of fuel");
+            debug.dump("Receiving " ~ me.provided_gal_us ~ " gal/s of fuel from tanker");
         }
         me.provided_gal_us = nil;
     },
@@ -818,12 +818,70 @@ var AirRefuelProducer = {
 
 var GroundRefuelProducer = {
 
-    new: func (name) {
-        return {
-            parents: [GroundRefuelProducer, AbstractProducer.new("ground-refuel-" ~ name)]
-        };
-    }
+    # A producer that produces fuel based on the flow rate provided by
+    # a fuel truck.
+    #
+    # Since an GroundRefuelProducer is a passive component, you need to attach
+    # it to a pump in order to make it produce fuel.
 
-    # TODO Implement
+    new: func (name, contact_point) {
+        # Create a new instance of GroundRefuelProducer.
+        #
+        # contact_point: A function f() that returns the receivable flow (gal/s)
+        #                that can be pumped into the system. It must return
+        #                a value that is greater than or equal to 0.
+
+        if (typeof(contact_point) != "func") {
+            die("GroundRefuelProducer.new: contact_point must be a function");
+        }
+
+        var m = {
+            parents: [GroundRefuelProducer, AbstractProducer.new("ground-refuel-" ~ name)],
+            contact_point:   contact_point,
+            provided_gal_us: nil
+        };
+        m.refuel_contact   = props.globals.initNode("/systems/refuel-ground/contact", 0, "BOOL");
+        m.level_gal_us     = props.globals.initNode("/systems/refuel-ground/level-gal_us", 0.0, "DOUBLE");
+        m.transfer_lbs_min = props.globals.initNode("/systems/refuel-ground/max-fuel-transfer-lbs-min", 6000, "INT");
+
+        m.fuel_truck = props.globals.getNode("/systems/refuel-ground");
+        return m;
+    },
+
+    prepare_subtract_fuel_flow: func (flow) {
+        assert(debug.isnan(flow) != 1.0);
+        assert(flow >= 0.0);
+
+        # This component is going to be a source for another component,
+        # which means this function will get called twice
+        if (me.provided_gal_us == nil) {
+            me.provided_gal_us = me._get_receivable_fuel_flow();
+        }
+        me.provided_gal_us = min(me.provided_gal_us, flow);
+
+        assert(0.0 <= me.provided_gal_us and me.provided_gal_us <= flow);
+        return me.provided_gal_us;
+    },
+
+    execute_fuel_flow: func {
+        if (me.provided_gal_us != nil) {
+            debug.dump("Receiving " ~ me.provided_gal_us ~ " gal/s of fuel from fuel truck");
+
+            var truck_total_gal_us = me.level_gal_us.getValue();
+            me.level_gal_us.setValue(truck_total_gal_us - me.provided_gal_us);
+        }
+        me.provided_gal_us = nil;
+    },
+
+    _get_receivable_fuel_flow: func {
+        if (!me.refuel_contact.getBoolValue()) {
+            return 0.0;
+        }
+
+        var flow = me.contact_point(me.fuel_truck);
+
+        assert(flow >= 0.0);
+        return flow;
+    }
 
 };
