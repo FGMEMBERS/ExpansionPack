@@ -737,7 +737,8 @@ var AirRefuelProducer = {
 
         var m = {
             parents: [AirRefuelProducer, AbstractProducer.new("air-refuel-" ~ name)],
-            probe:   probe
+            probe:   probe,
+            provided_gal_us: nil
         };
         m.refuel_contact = props.globals.initNode("/systems/refuel/contact", 0, "BOOL");
         m.ai_models = props.globals.getNode("/ai/models", 1);
@@ -748,10 +749,22 @@ var AirRefuelProducer = {
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0.0);
 
-        var received_flow = min(me._get_receivable_fuel_flow(), flow);
+        # This component is going to be a source for another component,
+        # which means this function will get called twice
+        if (me.provided_gal_us == nil) {
+            me.provided_gal_us = me._get_receivable_fuel_flow();
+        }
+        me.provided_gal_us = min(me.provided_gal_us, flow);
 
-        debug.dump("Receiving " ~ received_flow ~ " gal/s of fuel");
-        return received_flow;
+        assert(0.0 <= me.provided_gal_us and me.provided_gal_us <= flow);
+        return me.provided_gal_us;
+    },
+
+    execute_fuel_flow: func {
+        if (me.provided_gal_us != nil) {
+            debug.dump("Receiving " ~ me.provided_gal_us ~ " gal/s of fuel");
+        }
+        me.provided_gal_us = nil;
     },
 
     _get_receivable_fuel_flow: func {
