@@ -27,3 +27,25 @@ var info = func (message) {
     var string = sprintf("Info: %s", message);
     print(globals.string.color("37;40;1", string));
 };
+
+var screen = {
+
+    # Print colored text on the screen
+
+    red: func (message) {
+        globals.screen.log.write(message, 1, 0, 0);
+    },
+
+    green: func (message) {
+        globals.screen.log.write(message, 0, 1.0, 0);
+    },
+
+    blue: func (message) {
+        globals.screen.log.write(message, 0, 0.584, 1);
+    },
+
+    white: func (message) {
+        globals.screen.log.write(message, 1, 1, 1);
+    }
+
+};
