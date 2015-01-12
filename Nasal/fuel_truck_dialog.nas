@@ -17,6 +17,29 @@ io.include("Aircraft/ExpansionPack/Nasal/init.nas");
 
 with("logger");
 
+var old_fuel_flowing = 0;
+
+setlistener("/systems/fuel/producer-ground-refuel-fuel-truck/current-flow", func (node) {
+    if (getprop("/systems/refuel-ground/refuel")) {
+        var fuel_flowing = node.getValue() > 0.0;
+
+        if (fuel_flowing and !old_fuel_flowing) {
+            logger.screen.blue("Fuel flowing");
+        }
+        elsif (!fuel_flowing) {
+            if (old_fuel_flowing) {
+                logger.screen.green("Refueling complete!");
+            }
+            setprop("/systems/refuel-ground/refuel", 0);
+        }
+
+        old_fuel_flowing = fuel_flowing;
+    }
+    else {
+        old_fuel_flowing = 0;
+    }
+});
+
 setlistener("/systems/refuel-ground/refuel", func (node) {
     if (node.getValue()) {
         logger.screen.green("Refueling started...");
