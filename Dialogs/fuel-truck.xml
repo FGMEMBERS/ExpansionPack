@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Copyright (c) 2015 onox
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<PropertyList>
+
+    <name>fuel-truck</name>
+    <layout>vbox</layout>
+    <width>280</width>
+    <resizable>false</resizable>
+
+    <nasal>
+        <open>
+            props.globals.initNode("/sim/model/fuel-truck/enabled", 0, "BOOL");
+            props.globals.initNode("/sim/model/fuel-truck/connected", 0, "BOOL");
+
+            props.globals.initNode("/systems/refuel-ground/refuel", 0, "BOOL");
+            props.globals.initNode("/systems/refuel-ground/drain", 0, "BOOL");
+        </open>
+    </nasal>
+
+    <group>
+        <layout>hbox</layout>
+
+        <empty><stretch>true</stretch></empty>
+        <text>
+            <label>Fuel Truck</label>
+        </text>
+        <empty><stretch>true</stretch></empty>
+
+        <button>
+            <legend/>
+            <keynum>27</keynum>
+            <pref-width>16</pref-width>
+            <pref-height>16</pref-height>
+            <border>2</border>
+            <binding>
+                <command>dialog-close</command>
+            </binding>
+        </button>
+    </group>
+
+    <hrule/>
+
+    <group>
+        <layout>vbox</layout>
+        <padding>6</padding>
+
+        <group>
+            <layout>table</layout>
+            <halign>left</halign>
+
+            <text>
+                <row>0</row>
+                <col>0</col>
+                <halign>left</halign>
+                <label>Remaining fuel in truck:</label>
+            </text>
+            <input>
+                <row>0</row>
+                <col>1</col>
+                <halign>left</halign>
+                <name>level-fuel-truck</name>
+                <label>gal</label>
+                <live>true</live>
+                <property>/systems/refuel-ground/level-gal_us</property>
+                <binding>
+                    <command>dialog-apply</command>
+                    <object-name>level-fuel-truck</object-name>
+                </binding>
+            </input>
+
+            <text>
+                <row>1</row>
+                <col>0</col>
+                <halign>left</halign>
+                <label>Total fuel in tanks:</label>
+            </text>
+            <text>
+                <row>1</row>
+                <col>1</col>
+                <halign>left</halign>
+                <live>true</live>
+                <property>/consumables/fuel/total-fuel-gal_us</property>
+                <format>%.3f gal</format>
+            </text>
+
+            <text>
+                <row>2</row>
+                <col>0</col>
+                <halign>left</halign>
+                <label>Current fuel flow:</label>
+            </text>
+            <text>
+                <row>2</row>
+                <col>1</col>
+                <halign>left</halign>
+                <live>true</live>
+                <property>/systems/fuel/producer-ground-refuel-fuel-truck/current-flow</property>
+                <format>%.3f gal</format>
+            </text>
+
+            <checkbox>
+                <row>3</row>
+                <col>0</col>
+                <colspan>2</colspan>
+                <halign>left</halign>
+                <enable>
+                    <not>
+                        <or>
+                            <property>/sim/model/fuel-truck/connected</property>
+                            <property>/systems/refuel-ground/refuel</property>
+                            <property>/systems/refuel-ground/drain</property>
+                        </or>
+                    </not>
+                </enable>
+                <label>Show fuel truck</label>
+                <live>true</live>
+                <property>/sim/model/fuel-truck/enabled</property>
+                <binding>
+                    <command>dialog-apply</command>
+                </binding>
+                <binding>
+                    <command>property-toggle</command>
+                </binding>
+            </checkbox>
+
+            <checkbox>
+                <row>4</row>
+                <col>0</col>
+                <colspan>2</colspan>
+                <halign>left</halign>
+                <enable>
+                    <not>
+                        <or>
+                            <property>/systems/refuel-ground/refuel</property>
+                            <property>/systems/refuel-ground/drain</property>
+                        </or>
+                    </not>
+                </enable>
+                <label>Connect fuel line to aircraft</label>
+                <live>true</live>
+                <property>/sim/model/fuel-truck/connected</property>
+                <binding>
+                    <command>dialog-apply</command>
+                </binding>
+                <binding>
+                    <command>property-toggle</command>
+                </binding>
+            </checkbox>
+        </group>
+    </group>
+
+    <hrule/>
+
+    <group>
+        <layout>vbox</layout>
+        <text>
+            <label>Controls</label>
+        </text>
+
+        <group>
+            <layout>table</layout>
+            <halign>center</halign>
+
+            <button>
+                <row>0</row>
+                <col>0</col>
+                <legend>Start refueling</legend>
+                <visible>
+                    <not>
+                        <property>/systems/refuel-ground/refuel</property>
+                    </not>
+                </visible>
+                <enable>
+                    <and>
+                        <property>/sim/model/fuel-truck/connected</property>
+                        <not>
+                            <property>/systems/refuel-ground/drain</property>
+                        </not>
+                    </and>
+                </enable>
+                <binding>
+                    <command>nasal</command>
+                    <script>
+                        setprop("/systems/refuel-ground/refuel", 1);
+                    </script>
+                </binding>
+            </button>
+            <button>
+                <row>0</row>
+                <col>0</col>
+                <legend>Stop refueling</legend>
+                <visible>
+                    <property>/systems/refuel-ground/refuel</property>
+                </visible>
+                <binding>
+                    <command>nasal</command>
+                    <script>
+                        setprop("/systems/refuel-ground/refuel", 0);
+                    </script>
+                </binding>
+            </button>
+
+            <button>
+                <row>0</row>
+                <col>1</col>
+                <legend>Start draining</legend>
+                <visible>
+                    <not>
+                        <property>/systems/refuel-ground/drain</property>
+                    </not>
+                </visible>
+                <enable>
+                    <and>
+                        <property>/sim/model/fuel-truck/connected</property>
+                        <not>
+                            <property>/systems/refuel-ground/refuel</property>
+                        </not>
+                    </and>
+                </enable>
+                <binding>
+                    <command>nasal</command>
+                    <script>
+                        setprop("/systems/refuel-ground/drain", 1);
+                    </script>
+                </binding>
+            </button>
+            <button>
+                <row>0</row>
+                <col>1</col>
+                <legend>Stop draining</legend>
+                <visible>
+                    <property>/systems/refuel-ground/drain</property>
+                </visible>
+                <binding>
+                    <command>nasal</command>
+                    <script>
+                        setprop("/systems/refuel-ground/drain", 0);
+                    </script>
+                </binding>
+            </button>
+        </group>
+    </group>
+
+    <hrule/>
+
+    <group>
+        <layout>hbox</layout>
+        <default-padding>6</default-padding>
+        
+        <empty><stretch>true</stretch></empty>
+        
+        <button>
+            <legend>Close</legend>
+            <default>true</default>
+            <binding>
+                <command>dialog-close</command>
+            </binding>
+        </button>
+    </group>
+
+</PropertyList>

@@ -75,6 +75,7 @@ var TransferableFuelComponent = {
             source_subtracted: nil,
             sink_added:        nil
         };
+
         m.node.setValues({
             "max-flow":              max_flow,
             "requested-flow-factor": 0.0,
@@ -320,10 +321,12 @@ var LeakableTank = {
             parents: [LeakableTank, Tank.new("leakable-" ~ name, index, typical_level)],
             consumer: consumer
         };
+
         m.node.setValues({
             "max-leak-flow": max_leak_flow,
             "leaking":       0.0
         });
+
         return m;
     }
 
@@ -560,9 +563,10 @@ var BoostPump = {
     # Call connect() to insert the boost pump between two components.
 
     new: func (name, max_flow) {
-        return {
+        var m = {
             parents: [BoostPump, AbstractPump.new("boost-" ~ name, max_flow)]
         };
+        return m;
     },
 
     enable: func {
@@ -606,9 +610,10 @@ var GravityPump = {
     # Call connect() to insert the gravity pump between two components.
 
     new: func (name, max_flow) {
-        return {
+        var m = {
             parents: [GravityPump, AbstractPump.new("gravity-" ~ name, max_flow)]
         };
+        return m;
     }
 
     # TODO Use g load factor to control me.set_flow_factor()
@@ -618,9 +623,15 @@ var GravityPump = {
 var AbstractConsumer = {
 
     new: func (name) {
-        return {
+        var m = {
             parents: [AbstractConsumer, FuelComponent.new("consumer-" ~ name)]
         };
+
+        m.node.setValues({
+            "current-flow": 0.0
+        });
+
+        return m;
     },
 
     prepare_subtract_fuel_flow: func (flow) {
@@ -628,7 +639,10 @@ var AbstractConsumer = {
     },
 
     execute_fuel_flow: func {
-        # No operation
+        if (me.consumed_gal_us != nil) {
+            me.set_param("current-flow", me.consumed_gal_us);
+        }
+        me.consumed_gal_us = nil;
     }
 
 };
@@ -660,20 +674,22 @@ var EngineConsumer = {
             die("EngineConsumer.new: engine must be a function");
         }
 
-        return {
+        var m = {
             parents: [EngineConsumer, AbstractConsumer.new("engine-" ~ name)],
-            engine:  engine
+            engine:  engine,
+            consumed_gal_us: nil
         };
+        return m;
     },
 
     prepare_add_fuel_flow: func (flow) {
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0.0);
 
-        var used_flow = me.engine(flow);
+        me.consumed_gal_us = me.engine(flow);
 
-        assert(0.0 <= used_flow and used_flow <= flow);
-        return used_flow;
+        assert(0.0 <= me.consumed_gal_us and me.consumed_gal_us <= flow);
+        return me.consumed_gal_us;
     }
 
 };
@@ -683,17 +699,20 @@ var JettisonConsumer = {
     # A consumer that will always consume any fuel it is given.
 
     new: func (name) {
-        return {
-            parents: [JettisonConsumer, AbstractConsumer.new("jettison-" ~ name)]
+        var m = {
+            parents: [JettisonConsumer, AbstractConsumer.new("jettison-" ~ name)],
+            consumed_gal_us: nil
         };
+        return m;
     },
 
     prepare_add_fuel_flow: func (flow) {
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0.0);
 
-        debug.dump("Jettisoning " ~ flow ~ " gal/s of fuel");
-        return flow;
+        me.consumed_gal_us = flow;
+
+        return me.consumed_gal_us;
     }
 
 };
@@ -701,9 +720,15 @@ var JettisonConsumer = {
 var AbstractProducer = {
 
     new: func (name) {
-        return {
+        var m = {
             parents: [AbstractProducer, FuelComponent.new("producer-" ~ name)]
         };
+
+        m.node.setValues({
+            "current-flow": 0.0
+        });
+
+        return m;
     },
 
     prepare_add_fuel_flow: func (flow) {
@@ -742,6 +767,7 @@ var AirRefuelProducer = {
         };
         m.refuel_contact = props.globals.initNode("/systems/refuel/contact", 0, "BOOL");
         m.ai_models = props.globals.getNode("/ai/models", 1);
+
         return m;
     },
 
@@ -762,7 +788,8 @@ var AirRefuelProducer = {
 
     execute_fuel_flow: func {
         if (me.provided_gal_us != nil) {
-            debug.dump("Receiving " ~ me.provided_gal_us ~ " gal/s of fuel from tanker");
+            me.set_param("current-flow", me.provided_gal_us);
+            debug.dump("Receiving " ~ me.provided_gal_us ~ " gal of fuel from tanker");
         }
         me.provided_gal_us = nil;
     },
@@ -840,11 +867,12 @@ var GroundRefuelProducer = {
             contact_point:   contact_point,
             provided_gal_us: nil
         };
-        m.refuel_contact   = props.globals.initNode("/systems/refuel-ground/contact", 0, "BOOL");
+        m.refuel_contact   = props.globals.initNode("/systems/refuel-ground/refuel", 0, "BOOL");
         m.level_gal_us     = props.globals.initNode("/systems/refuel-ground/level-gal_us", 0.0, "DOUBLE");
         m.transfer_lbs_min = props.globals.initNode("/systems/refuel-ground/max-fuel-transfer-lbs-min", 6000, "INT");
 
         m.fuel_truck = props.globals.getNode("/systems/refuel-ground");
+
         return m;
     },
 
@@ -865,7 +893,8 @@ var GroundRefuelProducer = {
 
     execute_fuel_flow: func {
         if (me.provided_gal_us != nil) {
-            debug.dump("Receiving " ~ me.provided_gal_us ~ " gal/s of fuel from fuel truck");
+            me.set_param("current-flow", me.provided_gal_us);
+            debug.dump("Receiving " ~ me.provided_gal_us ~ " gal of fuel from fuel truck");
 
             var truck_total_gal_us = me.level_gal_us.getValue();
             me.level_gal_us.setValue(truck_total_gal_us - me.provided_gal_us);
