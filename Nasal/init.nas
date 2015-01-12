@@ -35,3 +35,26 @@ var with = func (modules...) {
         io.import("Aircraft/ExpansionPack/Nasal/" ~ module ~ ".nas", module);
     }
 };
+
+var check_version = func (module, major, minor) {
+    if (!contains(globals, module) or typeof(globals[module]) != "hash") {
+        die("check_version(): module not imported");
+    }
+
+    var version_major = globals[module].version.major;
+    var version_minor = globals[module].version.minor;
+
+    var version_ok = (version_major == major and version_minor >= minor);
+
+    if (!version_ok) {
+        var format  = "Version %d.%d of module '%s' required, but version %d.%d provided by ExpansionPack";
+        var message = sprintf(format, major, minor, module, version_major, version_minor);
+
+        with("logger");
+        logger.error(message);
+
+        # Continuing with an old and incompatible version of the module is
+        # stupid and may cause strange bugs.
+        die(message);
+    }
+};

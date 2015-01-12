@@ -13,6 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+var version = {
+    major: 0,
+    minor: 0
+};
+
 var min = std.min;
 var max = std.max;
 
