@@ -8,12 +8,15 @@ Adding the 3D model and dialog
 
 1. Import the fuel_truck_model by adding the following to a `.nas` file:
 
+    ```javascript
     io.include("Aircraft/ExpansionPack/Nasal/init.nas");
-    
+
     with("fuel_truck_dialog");
+    ```
 
 2. Add an `<item>` to your aircraft's `<menu>`:
 
+   ```xml
     <item>
         <label>-- Ground Services --</label>
         <enabled type="bool">false</enabled>
@@ -26,9 +29,11 @@ Adding the 3D model and dialog
             <dialog-name>fuel-truck</dialog-name>
         </binding>
     </item>
+    ```
 
 3. Add the fuel truck 3D model to your aircraft's model XML file:
 
+    ```xml
     <model>
         <name>fuel-truck</name>
         <path>Aircraft/ExpansionPack/Models/Airport/Fuel-Truck/fuel-truck.xml</path>
@@ -46,18 +51,22 @@ Adding the 3D model and dialog
             <property>/sim/model/fuel-truck/enabled</property>
         </condition>
     </animation>
+    ```
 
 Adding sounds
 -------------
 
-1. The expansion pack provides a `pushback.wav` and a `<filter>` for helping to control the volume of the fuel truck. First import the `<filter>` to your `-set.xml` file:
+1. The expansion pack provides a `pushback.wav` and a `<filter>` for helping to control the volume of the fuel truck. First, import the `<filter>` to your `-set.xml` file:
 
+    ```xml
     <autopilot>
         <path>Aircraft/ExpansionPack/Systems/fuel-truck.xml</path>
     </autopilot>
+    ```
 
-2. Then create a file called `Systems/sound-fuel-truck.xml` to your aircraft. To this file you need to add a gain `<filter>` that uses the `/sim/model/fuel-truck/state` property as the gain and outputs the volume to another property, for example `/sim/model/fuel-truck/volume`. This is what the Osprey uses:
+2. Then create a file called `Systems/sound-fuel-truck.xml` and add it to your aircraft. In this file you need to add a gain `<filter>` that uses the `/sim/model/fuel-truck/state` property as the gain and outputs the volume to another property, for example `/sim/model/fuel-truck/volume`. This is what the Osprey uses:
 
+    ```xml
     <filter>
         <update-interval-secs type="double">0.1</update-interval-secs>
         <type>gain</type>
@@ -71,12 +80,12 @@ Adding sounds
             <value>0.2</value>
             <offset>
                 <expression>
-                <product>
-                    <!-- Boost the volume if both cockpit and starboard doors are open -->
-                    <property>/instrumentation/doors/cockpitdoor/position-norm</property>
-                    <property>/instrumentation/doors/crewup/position-norm</property>
-                    <value>0.4</value>
-                </product>
+                    <product>
+                        <!-- Boost the volume if both cockpit and starboard doors are open -->
+                        <property>/instrumentation/doors/cockpitdoor/position-norm</property>
+                        <property>/instrumentation/doors/crewup/position-norm</property>
+                        <value>0.4</value>
+                    </product>
                 </expression>
             </offset>
         </input>
@@ -87,15 +96,19 @@ Adding sounds
             <property>/sim/model/fuel-truck/volume</property>
         </output>
     </filter>
+    ```
 
-3. Add the `sound-fuel-truck.xml` to your `-set.xml` file:
+3. Add the `sound-fuel-truck.xml` file to your `-set.xml` file:
 
+    ```xml
     <autopilot>
         <path>Systems/sound-fuel-truck.xml</path>
     </autopilot>
+    ```
 
 4. Finally, you need to use the `/sim/model/fuel-truck/volume` property to control the volume of the `pushback.wav` file. Add the following to your aircraft's sound XML file. This is what the Osprey uses:
 
+    ```xml
     <fuel-truck-outside>
         <name>fuel-truck-outside</name>
         <mode>looped</mode>
@@ -116,6 +129,7 @@ Adding sounds
             <offset>1.1</offset>
         </pitch>
     </fuel-truck-outside>
+    ```
 
 Properties
 ----------
