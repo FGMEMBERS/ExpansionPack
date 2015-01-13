@@ -17,6 +17,11 @@ io.include("Aircraft/ExpansionPack/Nasal/init.nas");
 
 with("logger");
 
+var version = {
+    major: 0,
+    minor: 0
+};
+
 var sin = func(a) { math.sin(a * globals.D2R) }
 var cos = func(a) { math.cos(a * globals.D2R) }
 var max = func(a, b) { a > b ? a : b }

@@ -17,6 +17,11 @@ io.include("Aircraft/ExpansionPack/Nasal/init.nas");
 
 with("logger");
 
+var version = {
+    major: 1,
+    minor: 0
+};
+
 var old_fuel_flowing = 0;
 
 setlistener("/systems/fuel/producer-ground-refuel-fuel-truck/current-flow", func (node) {

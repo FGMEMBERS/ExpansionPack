@@ -13,6 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+var version = {
+    major: 1,
+    minor: 0
+};
+
 var error = func (message) {
     var string = sprintf("Error: %s", message);
     print(globals.string.color("31;40;1", string));
