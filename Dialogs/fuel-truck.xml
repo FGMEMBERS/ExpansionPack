@@ -148,6 +148,9 @@
                 <enable>
                     <not>
                         <or>
+                            <not>
+                                <property>/sim/model/fuel-truck/enabled</property>
+                            </not>
                             <property>/systems/refuel-ground/refuel</property>
                             <property>/systems/refuel-ground/drain</property>
                         </or>
