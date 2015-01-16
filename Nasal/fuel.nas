@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var version = {
-    major: 0,
+    major: 1,
     minor: 0
 };
 
@@ -44,11 +44,11 @@ var FuelComponent = {
         return me.name;
     },
 
-    prepare_subtract_fuel_flow: func (flow) {
+    prepare_subtract_fuel_flow: func (flow, dt) {
         die("FuelComponent.prepare_subtract_fuel_flow is abstract");
     },
 
-    prepare_add_fuel_flow: func (flow) {
+    prepare_add_fuel_flow: func (flow, dt) {
         die("FuelComponent.prepare_add_fuel_flow is abstract");
     },
 
@@ -136,41 +136,41 @@ var TransferableFuelComponent = {
         return flow_factor;
     },
 
-    get_current_flow: func {
+    get_current_flow: func (dt) {
         # Return the actual flow. The value depends on the maximum
         # possible flow and the actual flow factor.
 
-        return me.get_flow_factor() * me.get_max_flow();
+        return me.get_flow_factor() * me.get_max_flow() * dt;
     },
 
-    prepare_subtract_fuel_flow: func (flow) {
+    prepare_subtract_fuel_flow: func (flow, dt) {
         assert(me.source != nil);
         assert(debug.isnan(flow) != 1.0);
 
         me.source_subtracted = 1.0;
-        return me.source.prepare_subtract_fuel_flow(min(me.get_current_flow(), flow));
+        return me.source.prepare_subtract_fuel_flow(min(me.get_current_flow(dt), flow), dt);
     },
 
-    test_subtract_fuel_flow: func (flow) {
+    test_subtract_fuel_flow: func (flow, dt) {
         assert(me.source != nil);
         assert(debug.isnan(flow) != 1.0);
 
-        return me.source.test_subtract_fuel_flow(min(me.get_current_flow(), flow));
+        return me.source.test_subtract_fuel_flow(min(me.get_current_flow(dt), flow), dt);
     },
 
-    prepare_add_fuel_flow: func (flow) {
+    prepare_add_fuel_flow: func (flow, dt) {
         assert(me.sink != nil);
         assert(debug.isnan(flow) != 1.0);
 
         me.sink_added = 1.0;
-        return me.sink.prepare_add_fuel_flow(min(me.get_current_flow(), flow));
+        return me.sink.prepare_add_fuel_flow(min(me.get_current_flow(dt), flow), dt);
     },
 
-    test_add_fuel_flow: func (flow) {
+    test_add_fuel_flow: func (flow, dt) {
         assert(me.sink != nil);
         assert(debug.isnan(flow) != 1.0);
 
-        return me.sink.test_add_fuel_flow(min(me.get_current_flow(), flow));
+        return me.sink.test_add_fuel_flow(min(me.get_current_flow(dt), flow), dt);
     },
 
     execute_fuel_flow: func {
@@ -199,7 +199,7 @@ var ActiveFuelComponent = {
         return m;
     },
 
-    transfer_fuel: func {
+    transfer_fuel: func (dt) {
         die("ActiveFuelComponent.transfer_fuel is abstract");
     }
 
@@ -252,7 +252,7 @@ var Tank = {
         return max(0, min(me.property.getNode("level-gal_us").getValue(), me.get_max_capacity()));
     },
 
-    prepare_subtract_fuel_flow: func (flow) {
+    prepare_subtract_fuel_flow: func (flow, dt) {
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0.0);
 
@@ -264,7 +264,7 @@ var Tank = {
         return removed_gal_us;
     },
 
-    test_subtract_fuel_flow: func (flow) {
+    test_subtract_fuel_flow: func (flow, dt) {
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0.0);
 
@@ -274,7 +274,8 @@ var Tank = {
         return removed_gal_us;
     },
 
-    prepare_add_fuel_flow: func (flow) {
+    prepare_add_fuel_flow: func (flow, dt) {
+        # Note: dt is not needed here
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0);
 
@@ -286,7 +287,8 @@ var Tank = {
         return added_gal_us;
     },
 
-    test_add_fuel_flow: func (flow) {
+    test_add_fuel_flow: func (flow, dt) {
+        # Note: dt is not needed here
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0);
 
@@ -434,12 +436,12 @@ var Manifold = {
         me.sinks.append(sink);
     },
 
-    prepare_distribution: func {
+    prepare_distribution: func (dt) {
         # Compute total flow over all the sources
         me.total_flow_sources = 0.0;
         me.sources_flow = std.Vector.new();
         foreach (var source; me.sources.vector) {
-            var source_flow = source.test_subtract_fuel_flow(source.get_current_flow());
+            var source_flow = source.test_subtract_fuel_flow(source.get_current_flow(dt), dt);
             me.total_flow_sources += source_flow;
             me.sources_flow.append([me.sources.index(source), source_flow]);
         }
@@ -448,7 +450,7 @@ var Manifold = {
         me.total_flow_sinks = 0.0;
         me.sinks_flow = std.Vector.new();
         foreach (var sink; me.sinks.vector) {
-            var sink_flow = sink.test_add_fuel_flow(sink.get_current_flow());
+            var sink_flow = sink.test_add_fuel_flow(sink.get_current_flow(dt), dt);
             me.total_flow_sinks += sink_flow;
             me.sinks_flow.append([me.sinks.index(sink), sink_flow]);
         }
@@ -459,7 +461,7 @@ var Manifold = {
         me.transferable_flow = min(me.total_flow_sources, me.total_flow_sinks);
     },
 
-    prepare_subtract_fuel_flow: func (flow) {
+    prepare_subtract_fuel_flow: func (flow, dt) {
         assert(me.sources.size() > 0);
         assert(debug.isnan(flow) != 1.0);
 
@@ -474,14 +476,14 @@ var Manifold = {
         var usable_flow = 0.0;
         foreach (var tuple; me.sources.vector) {
             var source_flow = tuple[1] / me.total_flow_sources * flow;
-            usable_flow += me.sources.vector[tuple[0]].prepare_subtract_fuel_flow(source_flow);
+            usable_flow += me.sources.vector[tuple[0]].prepare_subtract_fuel_flow(source_flow, dt);
         }
 
         assert(usable_flow >= 0.0);
         return usable_flow;
     },
 
-    prepare_add_fuel_flow: func (flow) {
+    prepare_add_fuel_flow: func (flow, dt) {
         assert(me.sinks.size() > 0);
         assert(debug.isnan(flow) != 1.0);
 
@@ -496,7 +498,7 @@ var Manifold = {
         var usable_flow = 0.0;
         foreach (var tuple; me.sinks_flow.vector) {
             var sink_flow = tuple[1] / me.total_flow_sinks * flow;
-            usable_flow += me.sinks.vector[tuple[0]].prepare_add_fuel_flow(sink_flow);
+            usable_flow += me.sinks.vector[tuple[0]].prepare_add_fuel_flow(sink_flow, dt);
         }
 
         assert(usable_flow >= 0.0);
@@ -533,21 +535,21 @@ var AbstractPump = {
         return m;
     },
 
-    transfer_fuel: func {
+    transfer_fuel: func (dt) {
         assert(me.source != nil);
         assert(me.sink   != nil);
 
-        var current_flow = me.get_current_flow();
+        var current_flow = me.get_current_flow(dt);
 
         if (current_flow > 0.0) {
-            var available_flow = me.source.prepare_subtract_fuel_flow(current_flow);
+            var available_flow = me.source.prepare_subtract_fuel_flow(current_flow, dt);
 
             # Try to add the available flow to the receiving component
-            var actual_flow = me.sink.prepare_add_fuel_flow(available_flow);
+            var actual_flow = me.sink.prepare_add_fuel_flow(available_flow, dt);
 
             # The receiving component might have less volume available than
             # the sending component, so update the actual available flow.
-            var flow = me.source.prepare_subtract_fuel_flow(actual_flow);
+            var flow = me.source.prepare_subtract_fuel_flow(actual_flow, dt);
 
             assert(flow == actual_flow);
             debug.dump(sprintf("%s transferred %.4f out of %.4f", me.get_name(), flow, available_flow));
@@ -639,7 +641,7 @@ var AbstractConsumer = {
         return m;
     },
 
-    prepare_subtract_fuel_flow: func (flow) {
+    prepare_subtract_fuel_flow: func (flow, dt) {
         die("Illegal call to AbstractConsumer.prepare_subtract_fuel_flow: consumer cannot provide fuel");
     },
 
@@ -687,11 +689,11 @@ var EngineConsumer = {
         return m;
     },
 
-    prepare_add_fuel_flow: func (flow) {
+    prepare_add_fuel_flow: func (flow, dt) {
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0.0);
 
-        me.consumed_gal_us = me.engine(flow);
+        me.consumed_gal_us = me.engine(flow, dt);
 
         assert(0.0 <= me.consumed_gal_us and me.consumed_gal_us <= flow);
         return me.consumed_gal_us;
@@ -711,11 +713,11 @@ var JettisonConsumer = {
         return m;
     },
 
-    prepare_add_fuel_flow: func (flow) {
+    prepare_add_fuel_flow: func (flow, dt) {
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0.0);
 
-        me.consumed_gal_us = flow;
+        me.consumed_gal_us = flow * dt;
 
         return me.consumed_gal_us;
     }
@@ -736,7 +738,7 @@ var AbstractProducer = {
         return m;
     },
 
-    prepare_add_fuel_flow: func (flow) {
+    prepare_add_fuel_flow: func (flow, dt) {
         die("Illegal call to AbstractProducer.prepare_add_fuel_flow: provider cannot consume fuel");
     },
 
@@ -776,14 +778,14 @@ var AirRefuelProducer = {
         return m;
     },
 
-    prepare_subtract_fuel_flow: func (flow) {
+    prepare_subtract_fuel_flow: func (flow, dt) {
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0.0);
 
         # This component is going to be a source for another component,
         # which means this function will get called twice
         if (me.provided_gal_us == nil) {
-            me.provided_gal_us = me._get_receivable_fuel_flow();
+            me.provided_gal_us = me._get_receivable_fuel_flow(dt);
         }
         me.provided_gal_us = min(me.provided_gal_us, flow);
 
@@ -799,7 +801,7 @@ var AirRefuelProducer = {
         me.provided_gal_us = nil;
     },
 
-    _get_receivable_fuel_flow: func {
+    _get_receivable_fuel_flow: func (dt) {
         if (!getprop("/sim/ai/enabled")) {
             return 0.0;
         }
@@ -840,7 +842,7 @@ var AirRefuelProducer = {
             return 0.0;
         }
 
-        var flow = me.probe(tanker);
+        var flow = me.probe(tanker, dt);
 
         assert(flow >= 0.0);
         return flow;
@@ -881,14 +883,14 @@ var GroundRefuelProducer = {
         return m;
     },
 
-    prepare_subtract_fuel_flow: func (flow) {
+    prepare_subtract_fuel_flow: func (flow, dt) {
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0.0);
 
         # This component is going to be a source for another component,
         # which means this function will get called twice
         if (me.provided_gal_us == nil) {
-            me.provided_gal_us = me._get_receivable_fuel_flow();
+            me.provided_gal_us = me._get_receivable_fuel_flow(dt);
         }
         me.provided_gal_us = min(me.provided_gal_us, flow);
 
@@ -907,12 +909,12 @@ var GroundRefuelProducer = {
         me.provided_gal_us = nil;
     },
 
-    _get_receivable_fuel_flow: func {
+    _get_receivable_fuel_flow: func (dt) {
         if (!me.refuel_contact.getBoolValue()) {
             return 0.0;
         }
 
-        var flow = me.contact_point(me.fuel_truck);
+        var flow = me.contact_point(me.fuel_truck, dt);
 
         assert(flow >= 0.0);
         return flow;
