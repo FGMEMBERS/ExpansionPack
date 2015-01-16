@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var version = {
-    major: 1,
+    major: 2,
     minor: 0
 };
 
@@ -92,10 +92,10 @@ var TransferableFuelComponent = {
 
     connect: func (source, sink) {
         if (!isa(source, FuelComponent)) {
-            die("AbstractPump.new: source must be an instance of FuelComponent");
+            die("TransferableFuelComponent.connect: source must be an instance of FuelComponent");
         }
         if (!isa(sink, FuelComponent)) {
-            die("AbstractPump.new: sink must be an instance of FuelComponent");
+            die("TransferableFuelComponent.connect: sink must be an instance of FuelComponent");
         }
 
         if (me.source != nil and me.sink != nil) {
@@ -325,7 +325,7 @@ var LeakableTank = {
         }
 
         var m = {
-            parents: [LeakableTank, Tank.new("leakable-" ~ name, index, typical_level)],
+            parents:  [LeakableTank, Tank.new("leakable-" ~ name, index, typical_level)],
             consumer: consumer
         };
 
@@ -474,7 +474,7 @@ var Manifold = {
         flow = flow / me.total_flow_sinks * me.transferable_flow;
 
         var usable_flow = 0.0;
-        foreach (var tuple; me.sources.vector) {
+        foreach (var tuple; me.sources_flow.vector) {
             var source_flow = tuple[1] / me.total_flow_sources * flow;
             usable_flow += me.sources.vector[tuple[0]].prepare_subtract_fuel_flow(source_flow, dt);
         }
@@ -573,18 +573,27 @@ var BoostPump = {
         var m = {
             parents: [BoostPump, AbstractPump.new("boost-" ~ name, max_flow)]
         };
+
+        m.node_servicable = m.node.initNode("serviceable", 0, "BOOL");
+
         return m;
     },
 
     enable: func {
+        me.node_servicable.setBoolValue(1);
         me.set_flow_factor(1.0);
     },
 
     disable: func {
+        me.node_servicable.setBoolValue(0);
         me.set_flow_factor(0.0);
     },
 
     is_enabled: func {
+        return me.node_servicable.getBoolValue();
+    },
+
+    is_active: func {
         return me.get_flow_factor() > 0.0;
     }
 
