@@ -15,7 +15,7 @@
 
 var version = {
     major: 2,
-    minor: 0
+    minor: 1
 };
 
 var min = std.min;
@@ -929,4 +929,12 @@ var GroundRefuelProducer = {
         return flow;
     }
 
+};
+
+var make_tank_levels_persistent = func {
+    # Make tank levels persistent across sessions
+    foreach (var tank; props.globals.getNode("/consumables/fuel").getChildren("tank")) {
+        aircraft.data.add(tank.getNode("level-gal_us").getPath());
+    }
+    aircraft.data.load();
 };
