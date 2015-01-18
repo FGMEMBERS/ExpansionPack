@@ -15,7 +15,7 @@
 
 var version = {
     major: 1,
-    minor: 1
+    minor: 2
 };
 
 var AbstractTankPumpGroup = {
@@ -23,9 +23,18 @@ var AbstractTankPumpGroup = {
     new: func {
         var m = {
             parents:    [AbstractTankPumpGroup],
-            tank_pumps: std.Vector.new()
+            tank_pumps: std.Vector.new(),
+            condition: nil
         };
         return m;
+    },
+
+    set_condition: func (condition) {
+        if (typeof(condition) != "func") {
+            die("AbstractTankPumpGroup.set_condition: condition is not a function");
+        }
+
+        me.condition = condition;
     },
 
     add_tank_pump: func (tank, pump) {
@@ -82,6 +91,11 @@ var EmptyTankPumpGroup = {
             }
         }
 
+        # Keep the group active if condition is met
+        if (group_empty and me.condition != nil and me.condition(me)) {
+            group_empty = 0;
+        }
+
         return !group_empty;
     }
 
@@ -96,7 +110,7 @@ var FullTankPumpGroup = {
     new: func (max_level) {
         var m = {
             parents:   [FullTankPumpGroup, AbstractTankPumpGroup.new()],
-            max_level: max_level
+            max_level: max_level,
         };
         return m;
     },
@@ -115,6 +129,11 @@ var FullTankPumpGroup = {
             else {
                 pump.disable();
             }
+        }
+
+        # Keep the group active if condition is met
+        if (group_empty and me.condition != nil and me.condition(me)) {
+            group_empty = 0;
         }
 
         return !group_empty;
