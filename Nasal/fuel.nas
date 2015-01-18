@@ -589,7 +589,7 @@ var AbstractPump = {
             # the sending component, so update the actual available flow.
             var flow = me.source.prepare_subtract_fuel_flow(actual_flow, dt);
 
-            assert(flow == actual_flow);
+            assert(abs(flow - actual_flow) <= 0.0000001);
             debug.dump(sprintf("%s transferred %.4f out of %.4f", me.get_name(), flow, available_flow));
 
             # Now actually transfer the fuel
