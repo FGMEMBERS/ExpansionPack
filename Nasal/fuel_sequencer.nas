@@ -14,16 +14,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var version = {
-    major: 0,
+    major: 1,
     minor: 0
 };
 
-var TankPumpGroup = {
+var AbstractTankPumpGroup = {
 
     new: func {
         var m = {
-            parents:    [TankPumpGroup],
-            tank_pumps: std.Vector.new(),
+            parents:    [AbstractTankPumpGroup],
+            tank_pumps: std.Vector.new()
         };
         return m;
     },
@@ -39,23 +39,8 @@ var TankPumpGroup = {
         me.tank_pumps.append([tank, pump]);
     },
 
-    update_pumps: func (min_level) {
-        var group_empty = 1;
-
-        foreach (var tuple; me.tank_pumps.vector) {
-            var tank = tuple[0];
-            var pump = tuple[1];
-
-            if (tank.get_current_level() > min_level) {
-                group_empty = 0;
-                me._enable_pump(pump);
-            }
-            else {
-                me._disable_pump(pump);
-            }
-        }
-
-        return !group_empty;
+    update_pumps: func {
+        die("AbstractTankPumpGroup.update_pumps is abstract");
     },
 
     disable_all_pumps: func {
@@ -81,12 +66,47 @@ var TankPumpGroup = {
 
 };
 
+var EmptyTankPumpGroup = {
+
+    # Enables the corresponding pump of each tank that is not empty. If
+    # a group has a non-empty tank, then the pumps of all lower priority
+    # groups will be disabled.
+
+    new: func (min_level) {
+        var m = {
+            parents:   [EmptyTankPumpGroup, AbstractTankPumpGroup.new()],
+            min_level: min_level
+        };
+        return m;
+    },
+
+    update_pumps: func {
+        var group_empty = 1;
+
+        foreach (var tuple; me.tank_pumps.vector) {
+            var tank = tuple[0];
+            var pump = tuple[1];
+
+            if (tank.get_current_level() > me.min_level) {
+                group_empty = 0;
+                me._enable_pump(pump);
+            }
+            else {
+                me._disable_pump(pump);
+            }
+        }
+
+        return !group_empty;
+    }
+
+};
+
 var PumpGroupSequencer = {
 
-    # A PumpGroupSequencer iterates over groups of tanks and enables the
-    # corresponding pump of each tank that is not empty. If a group has
-    # a non-empty tank, then the pumps of all lower priority groups will
-    # be disabled.
+    # A PumpGroupSequencer iterates over groups of tanks enables/disables
+    # the pumps depending on whether the corresponding tank is almost empty
+    # or full. Exact behavior depends on the class that is given to the
+    # new() constructor.
     #
     # Groups are created and added to the list by calling create_group(),
     # which returns an instance of TankPumpGroup. Call add_tank_pump()
@@ -94,17 +114,18 @@ var PumpGroupSequencer = {
     # is created has the highest priority and the last group has the lowest
     # priority.
 
-    new: func (min_level) {
+    new: func (min_level, pump_group_class) {
         var m = {
             parents:   [PumpGroupSequencer],
             groups:    std.Vector.new(),
-            min_level: min_level
+            min_level: min_level,
+            pump_group_class: pump_group_class
         };
         return m;
     },
 
     create_group: func {
-        var group = TankPumpGroup.new();
+        var group = me.pump_group_class.new(me.min_level);
         me.groups.append(group);
         return group;
     },
@@ -116,7 +137,7 @@ var PumpGroupSequencer = {
             # If no group is active yet, we check if the current group
             # has become active
             if (!active) {
-                active = group.update_pumps(me.min_level);
+                active = group.update_pumps();
             }
             # Once a group is active, all remaining groups must be disabled
             else {
