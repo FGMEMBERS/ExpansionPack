@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var version = {
-    major: 2,
+    major: 3,
     minor: 1
 };
 
@@ -341,6 +341,46 @@ var LeakableTank = {
 
 };
 
+var ServiceableFuelComponentMixin = {
+
+    # A mixin which, if inherited, makes the component serviceable.
+
+    new: func {
+        var m = {
+            parents: [ServiceableFuelComponentMixin]
+        };
+        return m;
+    },
+
+    _new_serviceable: func {
+        if (!isa(me, TransferableFuelComponent)) {
+            die("ServiceableFuelComponentMixin._new_serviceable: component must be an instance of TransferableFuelComponent");
+        }
+        me.serviceable = me.node.initNode("serviceable", 0, "BOOL");
+    },
+
+    enable: func {
+        if (!me.is_enabled()) {
+            debug.dump(sprintf("Enabling component %s", me.get_name()));
+        }
+        me.serviceable.setBoolValue(1);
+        me.set_flow_factor(1.0);
+    },
+
+    disable: func {
+        if (me.is_enabled()) {
+            debug.dump(sprintf("Disabling component %s", me.get_name()));
+        }
+        me.serviceable.setBoolValue(0);
+        me.set_flow_factor(0.0);
+    },
+
+    is_enabled: func {
+        return me.serviceable.getBoolValue();
+    }
+
+};
+
 var Valve = {
 
     # A component to provide or cut off the fuel flow. Only needs
@@ -350,21 +390,18 @@ var Valve = {
 
     new: func (name, max_flow) {
         var m = {
-            parents: [Valve, TransferableFuelComponent.new("valve-" ~ name, max_flow)]
+            parents: [Valve, ServiceableFuelComponentMixin.new(), TransferableFuelComponent.new("valve-" ~ name, max_flow)]
         };
+        m._new_serviceable();
         return m;
+    },
+
+    is_open: func {
+        return me.get_flow_factor() > 0.0;
     },
 
     get_open_position: func {
         return me.get_flow_factor();
-    },
-
-    open_valve: func {
-        me.set_flow_factor(1.0);
-    },
-
-    close_valve: func {
-        me.set_flow_factor(0.0);
     }
 
     # TODO Use the electrical bus to control me.set_flow_factor() when changing the factor
@@ -571,26 +608,10 @@ var BoostPump = {
 
     new: func (name, max_flow) {
         var m = {
-            parents: [BoostPump, AbstractPump.new("boost-" ~ name, max_flow)]
+            parents: [BoostPump, ServiceableFuelComponentMixin.new(), AbstractPump.new("boost-" ~ name, max_flow)]
         };
-
-        m.node_servicable = m.node.initNode("serviceable", 0, "BOOL");
-
+        m._new_serviceable();
         return m;
-    },
-
-    enable: func {
-        me.node_servicable.setBoolValue(1);
-        me.set_flow_factor(1.0);
-    },
-
-    disable: func {
-        me.node_servicable.setBoolValue(0);
-        me.set_flow_factor(0.0);
-    },
-
-    is_enabled: func {
-        return me.node_servicable.getBoolValue();
     },
 
     is_active: func {

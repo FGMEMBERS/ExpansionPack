@@ -15,7 +15,7 @@
 
 var version = {
     major: 1,
-    minor: 0
+    minor: 1
 };
 
 var AbstractTankPumpGroup = {
@@ -32,8 +32,8 @@ var AbstractTankPumpGroup = {
         if (!isa(tank, fuel.Tank)) {
             die("TankPumpGroup.add_tank_pump: tank must be an instance of Tank");
         }
-        if (!isa(pump, fuel.BoostPump)) {
-            die("TankPumpGroup.add_tank_pump: pump must be an instance of BoostPump");
+        if (!isa(pump, fuel.ServiceableFuelComponentMixin)) {
+            die("TankPumpGroup.add_tank_pump: pump must be an instance of ServiceableFuelComponentMixin");
         }
 
         me.tank_pumps.append([tank, pump]);
@@ -46,22 +46,8 @@ var AbstractTankPumpGroup = {
     disable_all_pumps: func {
         foreach (var tuple; me.tank_pumps.vector) {
             var pump = tuple[1];
-            me._disable_pump(pump);
+            pump.disable();
         }
-    },
-
-    _enable_pump: func (pump) {
-        if (!pump.is_enabled()) {
-            debug.dump(sprintf("Enabling pump %s", pump.get_name()));
-        }
-        pump.enable();
-    },
-
-    _disable_pump: func (pump) {
-        if (pump.is_enabled()) {
-            debug.dump(sprintf("Disabling pump %s", pump.get_name()));
-        }
-        pump.disable();
     }
 
 };
@@ -89,10 +75,45 @@ var EmptyTankPumpGroup = {
 
             if (tank.get_current_level() > me.min_level) {
                 group_empty = 0;
-                me._enable_pump(pump);
+                pump.enable();
             }
             else {
-                me._disable_pump(pump);
+                pump.disable();
+            }
+        }
+
+        return !group_empty;
+    }
+
+};
+
+var FullTankPumpGroup = {
+
+    # Enables the corresponding pump of each tank that is empty. If a
+    # group has an empty tank, then the pumps of all lower priority
+    # groups will be disabled.
+
+    new: func (min_level) {
+        var m = {
+            parents:   [FullTankPumpGroup, AbstractTankPumpGroup.new()],
+            max_level: max_level
+        };
+        return m;
+    },
+
+    update_pumps: func {
+        var group_empty = 1;
+
+        foreach (var tuple; me.tank_pumps.vector) {
+            var tank = tuple[0];
+            var pump = tuple[1];
+
+            if (tank.get_current_level() < me.max_level) {
+                group_empty = 0;
+                pump.enable();
+            }
+            else {
+                pump.disable();
             }
         }
 
