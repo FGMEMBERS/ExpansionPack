@@ -244,7 +244,7 @@ var Tank = {
     },
 
     get_typical_level: func {
-        return me.get_params("typical-level");
+        return me.get_param("typical-level");
     },
 
     get_current_level: func {
@@ -356,6 +356,7 @@ var ServiceableFuelComponentMixin = {
         if (!isa(me, TransferableFuelComponent)) {
             die("ServiceableFuelComponentMixin._new_serviceable: component must be an instance of TransferableFuelComponent");
         }
+
         me.serviceable = me.node.initNode("serviceable", 0, "BOOL");
     },
 

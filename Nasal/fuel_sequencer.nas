@@ -93,7 +93,7 @@ var FullTankPumpGroup = {
     # group has an empty tank, then the pumps of all lower priority
     # groups will be disabled.
 
-    new: func (min_level) {
+    new: func (max_level) {
         var m = {
             parents:   [FullTankPumpGroup, AbstractTankPumpGroup.new()],
             max_level: max_level
@@ -108,7 +108,7 @@ var FullTankPumpGroup = {
             var tank = tuple[0];
             var pump = tuple[1];
 
-            if (tank.get_current_level() < me.max_level) {
+            if (tank.get_typical_level() - tank.get_current_level() > me.max_level) {
                 group_empty = 0;
                 pump.enable();
             }
