@@ -905,11 +905,14 @@ var GroundRefuelProducer = {
             contact_point:   contact_point,
             provided_gal_us: nil
         };
-        m.refuel_contact   = props.globals.initNode("/systems/refuel-ground/refuel", 0, "BOOL");
-        m.level_gal_us     = props.globals.initNode("/systems/refuel-ground/level-gal_us", 0.0, "DOUBLE");
-        m.transfer_lbs_min = props.globals.initNode("/systems/refuel-ground/max-fuel-transfer-lbs-min", 6000, "INT");
+        m.fuel_truck = props.globals.initNode("/systems/refuel-ground");
 
-        m.fuel_truck = props.globals.getNode("/systems/refuel-ground");
+        m.refuel_contact   = m.fuel_truck.initNode("refuel", 0, "BOOL");
+        m.level_gal_us     = m.fuel_truck.initNode("level-gal_us", 0.0, "DOUBLE");
+        m.transfer_lbs_min = m.fuel_truck.initNode("max-fuel-transfer-lbs-min", 6000, "INT");
+
+        m.x_m = m.fuel_truck.initNode("x-m", 0.0, "DOUBLE");
+        m.y_m = m.fuel_truck.initNode("y-m", 0.0, "DOUBLE");
 
         return m;
     },

@@ -86,11 +86,76 @@
     </animation>
 
     <animation>
-        <type>select</type>
-        <object-name>tube</object-name>
-        <condition>
-            <property>/sim/model/fuel-truck/connected</property>
-        </condition>
+        <type>translate</type>
+        <expression>
+            <product>
+                <property>/position/altitude-agl-ft</property>
+                <value>-0.3048</value>
+                <sin>
+                    <deg2rad>
+                        <property>/orientation/roll-deg</property>
+                    </deg2rad>
+                </sin>
+            </product>
+        </expression>
+        <axis>
+            <x>0</x>
+            <y>1</y>
+            <z>0</z>
+        </axis>
+    </animation>
+
+    <animation>
+        <type>translate</type>
+        <property>/systems/refuel-ground/x-m</property>
+        <axis>
+            <x>0</x>
+            <y>1</y>
+            <z>0</z>
+        </axis>
+    </animation>
+
+    <animation>
+        <type>translate</type>
+        <property>/systems/refuel-ground/y-m</property>
+        <axis>
+            <x>1</x>
+            <y>0</y>
+            <z>0</z>
+        </axis>
+    </animation>
+
+    <animation>
+        <type>translate</type>
+        <property>/position/altitude-agl-ft</property>
+        <factor>-0.3048</factor>
+        <axis>
+            <x>0</x>
+            <y>0</y>
+            <z>1</z>
+        </axis>
+    </animation>
+
+    <animation>
+        <type>rotate</type>
+        <property>/orientation/pitch-deg</property>
+        <factor>-1</factor>
+        <axis>
+            <x>0</x>
+            <y>1</y>
+            <z>0</z>
+        </axis>
+    </animation>
+
+    <animation>
+        <type>rotate</type>
+        <property>/orientation/roll-deg</property>
+        <factor>1</factor>
+        <axis>
+            <x>1</x>
+            <y>0</y>
+            <z>0</z>
+        </axis>
     </animation>
 
 </PropertyList>
