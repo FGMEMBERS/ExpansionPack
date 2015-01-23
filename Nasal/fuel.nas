@@ -592,7 +592,9 @@ var AbstractPump = {
             var flow = me.source.prepare_subtract_fuel_flow(actual_flow, dt);
 
             assert(abs(flow - actual_flow) <= 0.0000001);
-            debug.dump(sprintf("%s transferred %.4f out of %.4f", me.get_name(), flow, available_flow));
+            if (flow > 0.0) {
+                debug.dump(sprintf("%s transferred %.4f out of %.4f", me.get_name(), flow, available_flow));
+            }
 
             # Now actually transfer the fuel
             me.source.execute_fuel_flow();
@@ -829,7 +831,9 @@ var AirRefuelProducer = {
     execute_fuel_flow: func {
         if (me.provided_gal_us != nil) {
             me.set_param("current-flow", me.provided_gal_us);
-            debug.dump("Receiving " ~ me.provided_gal_us ~ " gal of fuel from tanker");
+            if (me.provided_gal_us > 0.0) {
+                debug.dump("Receiving " ~ me.provided_gal_us ~ " gal of fuel from tanker");
+            }
         }
         me.provided_gal_us = nil;
     },
@@ -937,7 +941,9 @@ var GroundRefuelProducer = {
     execute_fuel_flow: func {
         if (me.provided_gal_us != nil) {
             me.set_param("current-flow", me.provided_gal_us);
-            debug.dump("Receiving " ~ me.provided_gal_us ~ " gal of fuel from fuel truck");
+            if (me.provided_gal_us > 0.0) {
+                debug.dump("Receiving " ~ me.provided_gal_us ~ " gal of fuel from fuel truck");
+            }
 
             var truck_total_gal_us = me.level_gal_us.getValue();
             me.level_gal_us.setValue(truck_total_gal_us - me.provided_gal_us);
