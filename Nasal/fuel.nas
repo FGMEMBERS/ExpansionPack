@@ -358,6 +358,10 @@ var ServiceableFuelComponentMixin = {
         }
 
         me.serviceable = me.node.initNode("serviceable", 0, "BOOL");
+
+        setlistener(me.serviceable.getPath(), func (node) {
+            me.set_flow_factor(node.getValue());
+        }, 0, 0);
     },
 
     enable: func {
@@ -365,7 +369,6 @@ var ServiceableFuelComponentMixin = {
             debug.dump(sprintf("Enabling component %s", me.get_name()));
         }
         me.serviceable.setBoolValue(1);
-        me.set_flow_factor(1.0);
     },
 
     disable: func {
@@ -373,7 +376,6 @@ var ServiceableFuelComponentMixin = {
             debug.dump(sprintf("Disabling component %s", me.get_name()));
         }
         me.serviceable.setBoolValue(0);
-        me.set_flow_factor(0.0);
     },
 
     is_enabled: func {
