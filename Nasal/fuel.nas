@@ -361,7 +361,7 @@ var ServiceableFuelComponentMixin = {
 
         setlistener(me.serviceable.getPath(), func (node) {
             me.set_flow_factor(node.getValue());
-        }, 0, 0);
+        }, 1, 0);
     },
 
     enable: func {
