@@ -98,26 +98,6 @@
 
     <animation>
         <type>translate</type>
-        <expression>
-            <product>
-                <property>/position/altitude-agl-ft</property>
-                <value>-0.3048</value>
-                <sin>
-                    <deg2rad>
-                        <property>/orientation/roll-deg</property>
-                    </deg2rad>
-                </sin>
-            </product>
-        </expression>
-        <axis>
-            <x>0</x>
-            <y>1</y>
-            <z>0</z>
-        </axis>
-    </animation>
-
-    <animation>
-        <type>translate</type>
         <property>/sim/model/fuel-truck/x-m</property>
         <axis>
             <x>0</x>
@@ -138,12 +118,22 @@
 
     <animation>
         <type>translate</type>
-        <property>/position/altitude-agl-ft</property>
-        <factor>-0.3048</factor>
+        <expression>
+            <difference>
+                <product>
+                    <property>/position/altitude-agl-ft</property>
+                    <value>0.3048</value>
+                </product>
+                <difference>
+                    <property>/sim/model/fuel-truck/ground-elev-m</property>
+                    <property>/position/ground-elev-m</property>
+                </difference>
+            </difference>
+        </expression>
         <axis>
             <x>0</x>
             <y>0</y>
-            <z>1</z>
+            <z>-1</z>
         </axis>
     </animation>
 

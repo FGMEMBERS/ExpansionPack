@@ -100,10 +100,13 @@ var FuelTruckPositionUpdater = {
         var distance = math.sqrt(math.pow(abs(x), 2) + math.pow(abs(y), 2));
         truck.apply_course_distance(course, distance);
 
+        var elev_m = geo.elevation(truck.lat(), truck.lon()) or getprop("/position/ground-elev-m");
+
         setprop("/sim/model/fuel-truck/latitude-deg", truck.lat());
         setprop("/sim/model/fuel-truck/longitude-deg", truck.lon());
+        setprop("/sim/model/fuel-truck/ground-elev-m", elev_m);
         setprop("/sim/model/fuel-truck/heading", heading + truck_yaw_deg);
-        logger.warn(sprintf("Resetting coordinates of fuel truck to %.4f lat, %.4f lon", truck.lat(), truck.lon()));
+        logger.warn(sprintf("Resetting coordinates of fuel truck to %.4f lat, %.4f lon at %.2f meter", truck.lat(), truck.lon(), elev_m));
     },
 
     update: func (dt) {
