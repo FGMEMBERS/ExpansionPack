@@ -16,11 +16,16 @@
 io.include("Aircraft/ExpansionPack/Nasal/init.nas");
 
 with("logger");
+with("updateloop");
 
 var version = {
     major: 1,
     minor: 0
 };
+
+var atan = func(a, b) { math.atan2(a, b) * globals.R2D }
+var sin = func(a) { math.sin(a * globals.D2R) }
+var cos = func(a) { math.cos(a * globals.D2R) }
 
 var old_fuel_flowing = 0;
 
@@ -61,6 +66,78 @@ setlistener("/systems/refuel-ground/drain", func (node) {
     else {
         logger.screen.white("Stopped draining fuel tanks");
     } 
+}, 0, 0);
+
+var FuelTruckPositionUpdater = {
+
+    new: func {
+        var m = {
+            parents: [FuelTruckPositionUpdater]
+        };
+        m.loop = updateloop.UpdateLoop.new(components: [m], update_period: 1 / 25, enable: 0);
+        return m;
+    },
+
+    enable: func {
+        me.loop.reset();
+        me.loop.enable();
+    },
+
+    disable: func {
+        me.loop.disable();
+    },
+
+    reset: func {
+        var truck = geo.aircraft_position();
+        var heading = getprop("/orientation/heading-deg");
+
+        # Offsets of fuel truck
+        var x = getprop("/systems/refuel-ground/x-m");
+        var y = getprop("/systems/refuel-ground/y-m");
+        var truck_yaw_deg = getprop("/systems/refuel-ground/yaw-deg");
+
+        var course = heading + geo.normdeg(atan(x, y));
+        var distance = math.sqrt(math.pow(abs(x), 2) + math.pow(abs(y), 2));
+        truck.apply_course_distance(course, distance);
+
+        setprop("/sim/model/fuel-truck/latitude-deg", truck.lat());
+        setprop("/sim/model/fuel-truck/longitude-deg", truck.lon());
+        setprop("/sim/model/fuel-truck/heading", heading + truck_yaw_deg);
+        logger.warn(sprintf("Resetting coordinates of fuel truck to %.4f lat, %.4f lon", truck.lat(), truck.lon()));
+    },
+
+    update: func (dt) {
+        var self = geo.aircraft_position();
+        var heading = getprop("/orientation/heading-deg");
+
+        var latitude = getprop("/sim/model/fuel-truck/latitude-deg");
+        var longitude = getprop("/sim/model/fuel-truck/longitude-deg");
+
+        var truck = geo.Coord.new().set_latlon(latitude, longitude, self.alt());
+        var truck_heading = getprop("/sim/model/fuel-truck/heading");
+
+        var course = self.course_to(truck) - heading;
+        var distance = self.distance_to(truck);
+
+        var x = distance * sin(course);
+        var y = -distance * cos(course);
+
+        setprop("/sim/model/fuel-truck/x-m", x);
+        setprop("/sim/model/fuel-truck/y-m", y);
+        setprop("/sim/model/fuel-truck/yaw-deg", truck_heading - heading);
+    }
+
+};
+
+var fuel_truck_updater = FuelTruckPositionUpdater.new();
+
+setlistener("/sim/model/fuel-truck/enabled", func (node) {
+    if (node.getValue()) {
+       fuel_truck_updater.enable();
+    }
+    else {
+       fuel_truck_updater.disable();
+    }
 }, 0, 0);
 
 var dialog = gui.Dialog.new("sim/gui/dialogs/fuel-truck/dialog", "Aircraft/ExpansionPack/Dialogs/fuel-truck.xml");

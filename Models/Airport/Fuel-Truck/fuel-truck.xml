@@ -86,6 +86,17 @@
     </animation>
 
     <animation>
+        <type>rotate</type>
+        <property>/sim/model/fuel-truck/yaw-deg</property>
+        <factor>-1</factor>
+        <axis>
+            <x>0</x>
+            <y>0</y>
+            <z>1</z>
+        </axis>
+    </animation>
+
+    <animation>
         <type>translate</type>
         <expression>
             <product>
@@ -107,7 +118,7 @@
 
     <animation>
         <type>translate</type>
-        <property>/systems/refuel-ground/x-m</property>
+        <property>/sim/model/fuel-truck/x-m</property>
         <axis>
             <x>0</x>
             <y>1</y>
@@ -117,7 +128,7 @@
 
     <animation>
         <type>translate</type>
-        <property>/systems/refuel-ground/y-m</property>
+        <property>/sim/model/fuel-truck/y-m</property>
         <axis>
             <x>1</x>
             <y>0</y>
