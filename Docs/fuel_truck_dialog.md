@@ -136,15 +136,15 @@ Initial Position
 
 The initial position of the fuel truck can be set in the aircraft's `-set.xml` file:
 
-    ```xml
-    <systems>
-        <refuel-ground>
-            <x-m type="double">-8.0</x-m>
-            <y-m type="double">-15.0</y-m>
-            <yaw-deg type="double">300.0</yaw-deg>
-        </refuel-ground>
-    </systems>
-    ```
+```xml
+<systems>
+    <refuel-ground>
+        <x-m type="double">-8.0</x-m>
+        <y-m type="double">-15.0</y-m>
+        <yaw-deg type="double">300.0</yaw-deg>
+    </refuel-ground>
+</systems>
+```
 
 Properties
 ----------
