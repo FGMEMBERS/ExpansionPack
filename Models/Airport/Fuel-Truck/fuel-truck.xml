@@ -27,27 +27,6 @@
 
     <animation>
         <type>material</type>
-        <object-name>fuel_truck</object-name>
-        <condition>
-            <and>
-                <not>
-                    <property>/sim/rendering/rembrandt/enabled</property>
-                </not>
-                <greater-than>
-                    <property>/sim/time/sun-angle-rad</property>
-                    <value>1.22</value>
-                </greater-than>
-            </and>
-        </condition>
-        <emission>
-            <red>0.02</red>
-            <green>0.02</green>
-            <blue>0.02</blue>
-        </emission>
-    </animation>
-
-    <animation>
-        <type>material</type>
         <object-name>spot-light</object-name>
         <condition>
             <and>
@@ -75,7 +54,7 @@
         <condition>
             <greater-than>
                 <property>/sim/time/sun-angle-rad</property>
-                <value>1.22</value>
+                <value>1.48</value>
             </greater-than>
         </condition>
         <emission>
@@ -98,7 +77,7 @@
 
     <animation>
         <type>translate</type>
-        <property>/sim/model/fuel-truck/x-m</property>
+        <property>/sim/model/fuel-truck/y-m</property>
         <axis>
             <x>0</x>
             <y>1</y>
@@ -108,9 +87,9 @@
 
     <animation>
         <type>translate</type>
-        <property>/sim/model/fuel-truck/y-m</property>
+        <property>/sim/model/fuel-truck/x-m</property>
         <axis>
-            <x>1</x>
+            <x>-1</x>
             <y>0</y>
             <z>0</z>
         </axis>

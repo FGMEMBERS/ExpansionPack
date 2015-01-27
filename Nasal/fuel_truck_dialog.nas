@@ -96,7 +96,7 @@ var FuelTruckPositionUpdater = {
         var y = getprop("/systems/refuel-ground/y-m");
         var truck_yaw_deg = getprop("/systems/refuel-ground/yaw-deg");
 
-        var course = heading + geo.normdeg(atan(x, y));
+        var course = heading + geo.normdeg(atan(y, x));
         var distance = math.sqrt(math.pow(abs(x), 2) + math.pow(abs(y), 2));
         truck.apply_course_distance(course, distance);
 
@@ -122,8 +122,8 @@ var FuelTruckPositionUpdater = {
         var course = self.course_to(truck) - heading;
         var distance = self.distance_to(truck);
 
-        var x = distance * sin(course);
-        var y = -distance * cos(course);
+        var x = distance * cos(course);
+        var y = distance * sin(course);
 
         setprop("/sim/model/fuel-truck/x-m", x);
         setprop("/sim/model/fuel-truck/y-m", y);
