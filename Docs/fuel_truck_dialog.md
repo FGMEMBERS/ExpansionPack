@@ -37,11 +37,6 @@ Adding the 3D model and dialog
     <model>
         <name>fuel-truck</name>
         <path>Aircraft/ExpansionPack/Models/Airport/Fuel-Truck/fuel-truck.xml</path>
-        <offsets>
-            <x-m>0.0</x-m>
-            <y-m>0.0</y-m>
-            <z-m>0.0</z-m>
-        </offsets>
     </model>
 
     <animation>
@@ -137,14 +132,31 @@ Initial Position
 The initial position of the fuel truck can be set in the aircraft's `-set.xml` file:
 
 ```xml
+<sim>
+    <model>
+        <fuel-truck>
+            <!-- Initial position of the fuel truck. These values are
+                 used for a split second before they are overwritten
+                 by FuelTruckPositionUpdater from the ExpansionPack.
+            -->
+            <x-m type="double">-15.0</x-m>
+            <y-m type="double">-8.0</y-m>
+            <yaw-deg type="double">90.0</yaw-deg>
+        </fuel-truck>
+    </model>
+</sim>
+
 <systems>
     <refuel-ground>
-        <x-m type="double">-8.0</x-m>
-        <y-m type="double">-15.0</y-m>
-        <yaw-deg type="double">300.0</yaw-deg>
+        <level-gal_us type="double">3200.0</level-gal_us>
+        <x-m type="double">-15.0</x-m>
+        <y-m type="double">-8.0</y-m>
+        <yaw-deg type="double">90.0</yaw-deg>
     </refuel-ground>
 </systems>
 ```
+
+The properties in `/sim/model/fuel-truck/` are used initially until they get overwritten by values calculated using the properties in `/systems/refuel-ground/`. The same values must be used in order to avoid teleportation of the 3D model in the first second of it being visible.
 
 Properties
 ----------
