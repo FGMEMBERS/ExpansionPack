@@ -27,7 +27,7 @@
         <input>
             <condition>
                 <greater-than>
-                    <property>/systems/fuel/producer-ground-refuel-fuel-truck/current-flow</property>
+                    <property>/systems/fuel/producer-ground-refuel-fuel-truck/current-flow-gal_us-ps</property>
                     <value>0.0</value>
                 </greater-than>
             </condition>

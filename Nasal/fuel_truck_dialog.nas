@@ -29,7 +29,7 @@ var cos = func(a) { math.cos(a * globals.D2R) }
 
 var old_fuel_flowing = 0;
 
-setlistener("/systems/fuel/producer-ground-refuel-fuel-truck/current-flow", func (node) {
+setlistener("/systems/fuel/producer-ground-refuel-fuel-truck/current-flow-gal_us-ps", func (node) {
     if (getprop("/systems/refuel-ground/refuel")) {
         var fuel_flowing = node.getValue() > 0.0;
 

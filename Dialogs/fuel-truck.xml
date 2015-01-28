@@ -111,8 +111,8 @@
                 <col>1</col>
                 <halign>left</halign>
                 <live>true</live>
-                <property>/systems/fuel/producer-ground-refuel-fuel-truck/current-flow</property>
-                <format>%.3f gal</format>
+                <property>/systems/fuel/producer-ground-refuel-fuel-truck/current-flow-gal_us-ps</property>
+                <format>%.3f gal/s</format>
             </text>
 
             <checkbox>

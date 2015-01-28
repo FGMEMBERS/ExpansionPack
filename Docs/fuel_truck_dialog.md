@@ -167,4 +167,4 @@ The Fuel Truck dialog depends on several properties in `/systems/refuel-ground/`
 
 * `/systems/refuel-ground/refuel` is true if the fuel system should extract fuel out of the fuel truck.
 
-* `/systems/fuel/producer-ground-refuel-fuel-truck/current-flow` indicates the fuel flow in gallons. A value greater than zero indicates the aircraft is actually being refueled. This is shown in the 3D model of the fuel truck by the orange light on top of the fuel truck.
+* `/systems/fuel/producer-ground-refuel-fuel-truck/current-flow-gal_us-ps` indicates the fuel flow in gallons per second. A value greater than zero indicates the aircraft is actually being refueled. This is shown in the 3D model of the fuel truck by the orange light on top of the fuel truck.

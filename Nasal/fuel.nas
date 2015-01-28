@@ -14,8 +14,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var version = {
-    major: 3,
-    minor: 1
+    major: 4,
+    minor: 0
 };
 
 var min = std.min;
@@ -27,8 +27,14 @@ var FuelComponent = {
         var m = {
             parents: [FuelComponent],
             name:    name,
-            node:    props.globals.initNode("/systems/fuel/" ~ name)
+            node:    props.globals.initNode("/systems/fuel/" ~ name),
+            current_gal_us: 0.0
         };
+
+        m.node.setValues({
+            "current-flow-gal_us-ps":  0.0,
+        });
+
         return m;
     },
 
@@ -54,6 +60,15 @@ var FuelComponent = {
 
     execute_fuel_flow: func {
         die("FuelComponent.execute_fuel_flow is abstract");
+    },
+
+    update_current_flow: func (dt) {
+        me.set_param("current-flow-gal_us-ps", me.current_gal_us / dt);
+        me.current_gal_us = 0.0;
+    },
+
+    _add_current_flow: func (flow) {
+        me.current_gal_us = me.current_gal_us + flow;
     }
 
 };
@@ -78,7 +93,8 @@ var TransferableFuelComponent = {
             source:  nil,
             sink:    nil,
             source_subtracted: nil,
-            sink_added:        nil
+            sink_added:        nil,
+            transferred_flow:  0.0
         };
 
         m.node.setValues({
@@ -148,7 +164,10 @@ var TransferableFuelComponent = {
         assert(debug.isnan(flow) != 1.0);
 
         me.source_subtracted = 1.0;
-        return me.source.prepare_subtract_fuel_flow(min(me.get_current_flow(dt), flow), dt);
+        me.transferred_flow = me.source.prepare_subtract_fuel_flow(min(me.get_current_flow(dt), flow), dt);
+
+        assert(me.transferred_flow >= 0.0);
+        return me.transferred_flow;
     },
 
     test_subtract_fuel_flow: func (flow, dt) {
@@ -163,7 +182,10 @@ var TransferableFuelComponent = {
         assert(debug.isnan(flow) != 1.0);
 
         me.sink_added = 1.0;
-        return me.sink.prepare_add_fuel_flow(min(me.get_current_flow(dt), flow), dt);
+        me.transferred_flow = me.sink.prepare_add_fuel_flow(min(me.get_current_flow(dt), flow), dt);
+
+        assert(me.transferred_flow >= 0.0);
+        return me.transferred_flow;
     },
 
     test_add_fuel_flow: func (flow, dt) {
@@ -183,6 +205,8 @@ var TransferableFuelComponent = {
         if (me.sink_added != nil) {
             me.sink.execute_fuel_flow();
         }
+
+        me._add_current_flow(me.transferred_flow);
 
         me.source_subtracted = nil;
         me.sink_added        = nil;
@@ -228,7 +252,8 @@ var Tank = {
         var m = {
             parents:  [Tank, FuelComponent.new("tank-" ~ name)],
             property: tank_property,
-            new_level_gal_us: nil
+            new_level_gal_us: nil,
+            transferred_flow: 0.0
         };
 
         m.node.setValues({
@@ -258,6 +283,7 @@ var Tank = {
 
         var removed_gal_us = min(me.get_current_level(), flow);
         assert(0.0 <= removed_gal_us and removed_gal_us <= flow);
+        me.transferred_flow = -removed_gal_us;
 
         me.new_level_gal_us = me.get_current_level() - removed_gal_us;
 
@@ -281,6 +307,7 @@ var Tank = {
 
         var added_gal_us = min(me.get_max_capacity() - me.get_current_level(), flow);
         assert(0.0 <= added_gal_us and added_gal_us <= flow);
+        me.transferred_flow = added_gal_us;
 
         me.new_level_gal_us = me.get_current_level() + added_gal_us;
 
@@ -303,6 +330,8 @@ var Tank = {
 
         me.property.getNode("level-gal_us").setValue(me.new_level_gal_us);
         me.new_level_gal_us = nil;
+
+        me._add_current_flow(me.transferred_flow);
 
         assert(me.new_level_gal_us == nil);
     }
@@ -560,6 +589,8 @@ var Manifold = {
             }
         }
 
+        me._add_current_flow(me.transferable_flow);
+
         me.source_subtracted = nil;
         me.sink_added        = nil;
     }
@@ -599,6 +630,8 @@ var AbstractPump = {
             # Now actually transfer the fuel
             me.source.execute_fuel_flow();
             me.sink.execute_fuel_flow();
+
+            me._add_current_flow(flow);
         }
     }
 
@@ -668,11 +701,6 @@ var AbstractConsumer = {
         var m = {
             parents: [AbstractConsumer, FuelComponent.new("consumer-" ~ name)]
         };
-
-        m.node.setValues({
-            "current-flow": 0.0
-        });
-
         return m;
     },
 
@@ -682,7 +710,7 @@ var AbstractConsumer = {
 
     execute_fuel_flow: func {
         if (me.consumed_gal_us != nil) {
-            me.set_param("current-flow", me.consumed_gal_us);
+            me._add_current_flow(me.consumed_gal_us);
         }
         me.consumed_gal_us = nil;
     }
@@ -765,11 +793,6 @@ var AbstractProducer = {
         var m = {
             parents: [AbstractProducer, FuelComponent.new("producer-" ~ name)]
         };
-
-        m.node.setValues({
-            "current-flow": 0.0
-        });
-
         return m;
     },
 
@@ -830,7 +853,7 @@ var AirRefuelProducer = {
 
     execute_fuel_flow: func {
         if (me.provided_gal_us != nil) {
-            me.set_param("current-flow", me.provided_gal_us);
+            me._add_current_flow(me.provided_gal_us);
             if (me.provided_gal_us > 0.0) {
                 debug.dump("Receiving " ~ me.provided_gal_us ~ " gal of fuel from tanker");
             }
@@ -940,7 +963,7 @@ var GroundRefuelProducer = {
 
     execute_fuel_flow: func {
         if (me.provided_gal_us != nil) {
-            me.set_param("current-flow", me.provided_gal_us);
+            me._add_current_flow(me.provided_gal_us);
             if (me.provided_gal_us > 0.0) {
                 debug.dump("Receiving " ~ me.provided_gal_us ~ " gal of fuel from fuel truck");
             }
@@ -970,4 +993,50 @@ var make_tank_levels_persistent = func {
         aircraft.data.add(tank.getNode("level-gal_us").getPath());
     }
     aircraft.data.load();
+};
+
+var Network = {
+
+    new: func {
+        var m = {
+            parents:    [Network],
+            components: std.Vector.new(),
+            manifolds:  std.Vector.new(),
+            pumps:      std.Vector.new(),
+        };
+        return m;
+    },
+
+    add: func (component) {
+        me.components.append(component);
+        debug.dump(sprintf("Component '%s' added!", component.get_name()));
+
+        # Add if pump
+        if (isa(component, AbstractPump)) {
+            me.pumps.append(component);
+        }
+
+        # Add if manifold
+        if (isa(component, Manifold)) {
+            me.manifolds.append(component);
+        }
+    },
+
+    update: func (dt) {
+        # Prepare fair distribution by manifolds
+        foreach (var manifold; me.manifolds.vector) {
+            manifold.prepare_distribution(dt);
+        }
+
+        # Let pumps transfer fuel
+        foreach (var pump; me.pumps.vector) {
+            pump.transfer_fuel(dt);
+        }
+
+        # Update current flow gal/s counters of components
+        foreach (var component; me.components.vector) {
+            component.update_current_flow(dt);
+        }
+    }
+
 };
