@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var version = {
-    major: 4,
+    major: 5,
     minor: 0
 };
 
@@ -48,6 +48,21 @@ var FuelComponent = {
 
     get_name: func {
         return me.name;
+    },
+
+    set_source: func (source) {
+        if (!isa(source, FuelComponent)) {
+            die("FuelComponent.set_source: source must be an instance of FuelComponent");
+        }
+
+        # If this function is not overridden, then the FuelComponent is
+        # an end-point, thus it has no source or sink. The only reason to
+        # implement set_source() is because another component might call
+        # it in its connect() function.
+    },
+
+    connect: func (sink) {
+        sink.set_source(me);
     },
 
     prepare_subtract_fuel_flow: func (flow, dt) {
@@ -106,20 +121,31 @@ var TransferableFuelComponent = {
         return m;
     },
 
-    connect: func (source, sink) {
+    set_source: func (source) {
         if (!isa(source, FuelComponent)) {
-            die("TransferableFuelComponent.connect: source must be an instance of FuelComponent");
+            die("TransferableFuelComponent.set_source: source must be an instance of FuelComponent");
         }
-        if (!isa(sink, FuelComponent)) {
-            die("TransferableFuelComponent.connect: sink must be an instance of FuelComponent");
-        }
-
-        if (me.source != nil and me.sink != nil) {
-            die("Illegal call to TransferableFuelComponent.connect: already connected");
+        if (me.source != nil) {
+            die("Illegal call to TransferableFuelComponent.set_source: already connected");
         }
 
         me.source = source;
+    },
+
+    _set_sink: func (sink) {
+        if (!isa(sink, FuelComponent)) {
+            die("TransferableFuelComponent.set_sink: sink must be an instance of FuelComponent");
+        }
+        if (me.sink != nil) {
+            die("Illegal call to TransferableFuelComponent.set_sink: already connected");
+        }
+
         me.sink   = sink;
+    },
+
+    connect: func (sink) {
+        me._set_sink(sink);
+        sink.set_source(me);
     },
 
     get_max_flow: func {
@@ -481,28 +507,33 @@ var Manifold = {
         return m;
     },
 
-    add_source: func (source) {
+    set_source: func (source) {
         if (!isa(source, TransferableFuelComponent)) {
-            die("Manifold.add_source: source (" ~ source.get_name() ~ ") must be an instance of TransferableFuelComponent");
+            die("Manifold.set_source: source must be an instance of TransferableFuelComponent");
         }
 
         if (me.sources.contains(source.get_name())) {
-            die("Illegal call to Manifold.add_source: already connected");
+            die("Illegal call to Manifold.set_source: already connected");
         }
 
         me.sources.append(source);
     },
 
-    add_sink: func (sink) {
+    _set_sink: func (sink) {
         if (!isa(sink, TransferableFuelComponent)) {
-            die("Manifold.add_sink: sink (" ~ sink.get_name() ~ ") must be an instance of TransferableFuelComponent");
+            die("Manifold._set_sink: sink must be an instance of TransferableFuelComponent");
         }
 
         if (me.sinks.contains(sink.get_name())) {
-            die("Illegal call to Manifold.add_sink: already connected");
+            die("Illegal call to Manifold._set_sink: already connected");
         }
 
         me.sinks.append(sink);
+    },
+
+    connect: func (sink) {
+        me._set_sink(sink);
+        sink.set_source(me);
     },
 
     prepare_distribution: func (dt) {
@@ -985,6 +1016,17 @@ var GroundRefuelProducer = {
         return flow;
     }
 
+};
+
+var connect = func (components) {
+    var current = nil;
+
+    foreach (var component; components) {
+        if (current != nil) {
+            current.connect(component);
+        }
+        current = component;
+    }
 };
 
 var make_tank_levels_persistent = func {
