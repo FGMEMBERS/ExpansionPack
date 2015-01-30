@@ -15,7 +15,7 @@
 
 var version = {
     major: 5,
-    minor: 0
+    minor: 1
 };
 
 var min = std.min;
@@ -413,10 +413,14 @@ var ServiceableFuelComponentMixin = {
         }
 
         me.serviceable = me.node.initNode("serviceable", 0, "BOOL");
+        me.selected = me.node.initNode("selected", 1, "BOOL");
 
-        setlistener(me.serviceable.getPath(), func (node) {
-            me.set_flow_factor(node.getValue());
-        }, 1, 0);
+        var enable_flow_factor = func {
+            me.set_flow_factor(me.serviceable.getBoolValue() and me.selected.getBoolValue());
+        };
+
+        setlistener(me.serviceable.getPath(), func (node) enable_flow_factor(), 1, 0);
+        setlistener(me.selected.getPath(), func (node) enable_flow_factor(), 1, 0);
     },
 
     enable: func {
