@@ -153,6 +153,27 @@
                             </not>
                             <property>/systems/refuel-ground/refuel</property>
                             <property>/systems/refuel-ground/drain</property>
+
+                            <!-- Disable checkbox if not connected and not
+                                 standing still on ground. If the checkbox is
+                                 enabled, the user can still disable it, but not
+                                 re-enable it.
+                            -->
+                            <and>
+                                <not>
+                                    <property>/sim/model/fuel-truck/connected</property>
+                                </not>
+                                <or>
+                                    <greater-than>
+                                        <property>/position/gear-agl-ft</property>
+                                        <value>1.0</value>
+                                    </greater-than>
+                                    <greater-than>
+                                        <property>/velocities/groundspeed-kt</property>
+                                        <value>1.0</value>
+                                    </greater-than>
+                                </or>
+                            </and>
                         </or>
                     </not>
                 </enable>

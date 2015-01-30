@@ -50,6 +50,14 @@ setlistener("/systems/fuel/producer-ground-refuel-fuel-truck/current-flow-gal_us
     }
 });
 
+setlistener("/sim/model/fuel-truck/connected", func (node) {
+    if (!node.getValue()) {
+        # Disable refueling or draining
+        props.globals.getNode("/systems/refuel-ground/refuel").setBoolValue(0);
+        props.globals.getNode("/systems/refuel-ground/drain").setBoolValue(0);
+    }
+}, 0, 0);
+
 setlistener("/systems/refuel-ground/refuel", func (node) {
     if (node.getValue()) {
         logger.screen.green("Refueling started...");
@@ -140,6 +148,9 @@ setlistener("/sim/model/fuel-truck/enabled", func (node) {
     }
     else {
        fuel_truck_updater.disable();
+
+       # Disconnect fuel line
+       props.globals.getNode("/sim/model/fuel-truck/connected").setBoolValue(0);
     }
 }, 0, 0);
 
