@@ -27,7 +27,17 @@ var atan = func(a, b) { math.atan2(a, b) * globals.R2D }
 var sin = func(a) { math.sin(a * globals.D2R) }
 var cos = func(a) { math.cos(a * globals.D2R) }
 
+# Stop refueling after the fuel flow has dropped to zero for this
+# amount of seconds
+var refueling_complete_timeout = 2.0;
+
 var old_fuel_flowing = 0;
+var test_no_fuel_flow = 0;
+
+var no_refuel_timer = maketimer(refueling_complete_timeout, func {
+    test_no_fuel_flow = 1;
+});
+no_refuel_timer.singleShot = 1;
 
 setlistener("/systems/fuel/producer-ground-refuel-fuel-truck/current-flow-gal_us-ps", func (node) {
     if (getprop("/systems/refuel-ground/refuel")) {
@@ -35,15 +45,22 @@ setlistener("/systems/fuel/producer-ground-refuel-fuel-truck/current-flow-gal_us
 
         if (fuel_flowing and !old_fuel_flowing) {
             logger.screen.blue("Fuel flowing");
+            old_fuel_flowing = fuel_flowing;
+            no_refuel_timer.stop();
         }
         elsif (!fuel_flowing) {
-            if (old_fuel_flowing) {
-                logger.screen.green("Refueling complete!");
+            if (test_no_fuel_flow) {
+                if (old_fuel_flowing) {
+                    logger.screen.green("Refueling complete!");
+                }
+                setprop("/systems/refuel-ground/refuel", 0);
+                test_no_fuel_flow = 0;
+                old_fuel_flowing = fuel_flowing;
             }
-            setprop("/systems/refuel-ground/refuel", 0);
+            else {
+                no_refuel_timer.start();
+            }
         }
-
-        old_fuel_flowing = fuel_flowing;
     }
     else {
         old_fuel_flowing = 0;
@@ -64,6 +81,7 @@ setlistener("/systems/refuel-ground/refuel", func (node) {
     }
     else {
         logger.screen.white("Refueling stopped");
+        no_refuel_timer.stop();
     } 
 }, 0, 0);
 
