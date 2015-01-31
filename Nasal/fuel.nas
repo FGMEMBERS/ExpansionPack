@@ -912,13 +912,17 @@ var AirRefuelProducer = {
         foreach (var a; ac ~ mp) {
             if (!a.getNode("valid", 1).getValue()
              or !a.getNode("tanker", 1).getValue()
-             or !a.getNode("refuel/contact", 1).getValue()
-             or type != a.getNode("refuel/type", 1).getValue()) {
+             or !a.getNode("refuel/contact", 1).getValue()) {
                 continue;
             }
 
-            # TODO Override if distance to drogue/boom is closer than the current tanker
-            tanker = a;
+            foreach (var refuel_type; a.getNode("refuel", 1).getChildren("type")) {
+                if (type == refuel_type.getValue()) {
+                    # TODO Override if distance to drogue/boom is closer than the current tanker
+                    tanker = a;
+                    break;
+                }
+            }
         }
 
         var refueling = getprop("/systems/refuel/serviceable") and tanker != nil;
