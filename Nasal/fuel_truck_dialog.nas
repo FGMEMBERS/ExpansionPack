@@ -123,7 +123,7 @@ var FuelTruckPositionUpdater = {
         var truck_yaw_deg = getprop("/systems/refuel-ground/yaw-deg");
 
         var course = heading + geo.normdeg(atan(y, x));
-        var distance = math.sqrt(math.pow(abs(x), 2) + math.pow(abs(y), 2));
+        var distance = math.sqrt(math.pow(x, 2) + math.pow(y, 2));
         truck.apply_course_distance(course, distance);
 
         var elev_m = geo.elevation(truck.lat(), truck.lon()) or getprop("/position/ground-elev-m");
@@ -154,6 +154,24 @@ var FuelTruckPositionUpdater = {
         setprop("/sim/model/fuel-truck/x-m", x);
         setprop("/sim/model/fuel-truck/y-m", y);
         setprop("/sim/model/fuel-truck/yaw-deg", truck_heading - heading);
+
+        var fuel_point = geo.Coord.new(self);
+
+        var px = getprop("/sim/model/fuel-truck/px");
+        var py = getprop("/sim/model/fuel-truck/py");
+        var point_distance = math.sqrt(math.pow(px, 2) + math.pow(py, 2));
+        var point_course = heading + geo.normdeg(atan(py, -px));
+        fuel_point.apply_course_distance(point_course, point_distance);
+
+        var pz = getprop("/sim/model/fuel-truck/pz");
+        fuel_point.set_z(fuel_point.z() + pz);
+
+        var line_heading_deg = fuel_point.course_to(truck) - heading;
+        var line_distance = fuel_point.direct_distance_to(truck);
+        setprop("/sim/model/fuel-truck/line-heading-deg", line_heading_deg);
+        setprop("/sim/model/fuel-truck/line-length", line_distance);
+        var line_agl_m = getprop("/position/altitude-agl-ft") * globals.FT2M + pz;
+        setprop("/sim/model/fuel-truck/line-pitch-deg", math.asin(line_agl_m/line_distance) * globals.R2D);
     }
 
 };

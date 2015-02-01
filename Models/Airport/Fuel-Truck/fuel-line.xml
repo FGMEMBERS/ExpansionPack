@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+    Copyright (c) 2015 onox
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<PropertyList>
+
+    <path>fuel-line.ac</path>
+
+    <animation>
+        <type>select</type>
+        <object-name>fuel_line</object-name>
+        <condition>
+            <property>/sim/model/fuel-truck/connected</property>
+        </condition>
+    </animation>
+
+    <animation>
+        <type>rotate</type>
+        <property>/orientation/pitch-deg</property>
+        <factor>1</factor>
+        <axis>
+            <x>0</x>
+            <y>1</y>
+            <z>0</z>
+        </axis>
+    </animation>
+
+    <animation>
+        <type>rotate</type>
+        <property>/sim/model/fuel-truck/line-heading-deg</property>
+        <factor>-1</factor>
+        <axis>
+            <x>0</x>
+            <y>0</y>
+            <z>1</z>
+        </axis>
+    </animation>
+
+    <animation>
+        <type>rotate</type>
+        <property>/sim/model/fuel-truck/line-pitch-deg</property>
+        <factor>1</factor>
+        <axis>
+            <x>0</x>
+            <y>1</y>
+            <z>0</z>
+        </axis>
+    </animation>
+
+    <!-- Unscaled model has 4 cm length -->
+    <animation>
+        <type>scale</type>
+        <object-name>fuel_line</object-name>
+        <property>/sim/model/fuel-truck/line-length</property>
+        <x-min>0.0</x-min>
+        <y-min>1.0</y-min>
+        <z-min>1.0</z-min>
+        <x-factor>1.0</x-factor>
+        <y-factor>0.0</y-factor>
+        <z-factor>0.0</z-factor>
+    </animation>
+
+    <!-- Unscaled model has 4 cm diameter -->
+    <animation>
+        <type>scale</type>
+        <object-name>fuel_line</object-name>
+        <property>/sim/model/fuel-truck/line-diameter</property>
+        <x-min>1.0</x-min>
+        <y-min>0.0</y-min>
+        <z-min>0.0</z-min>
+        <x-factor>0.0</x-factor>
+        <y-factor>0.025</y-factor>
+        <z-factor>0.025</z-factor>
+    </animation>
+
+</PropertyList>
