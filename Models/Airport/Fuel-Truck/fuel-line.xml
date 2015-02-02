@@ -31,8 +31,8 @@
 
     <animation>
         <type>rotate</type>
-        <property>/orientation/pitch-deg</property>
-        <factor>1</factor>
+        <property>/sim/model/fuel-truck/line-pitch-deg</property>
+        <factor>-1</factor>
         <axis>
             <x>0</x>
             <y>1</y>
@@ -48,17 +48,6 @@
             <x>0</x>
             <y>0</y>
             <z>1</z>
-        </axis>
-    </animation>
-
-    <animation>
-        <type>rotate</type>
-        <property>/sim/model/fuel-truck/line-pitch-deg</property>
-        <factor>1</factor>
-        <axis>
-            <x>0</x>
-            <y>1</y>
-            <z>0</z>
         </axis>
     </animation>
 
@@ -86,6 +75,28 @@
         <x-factor>0.0</x-factor>
         <y-factor>0.025</y-factor>
         <z-factor>0.025</z-factor>
+    </animation>
+
+    <animation>
+        <type>rotate</type>
+        <property>/orientation/pitch-deg</property>
+        <factor>-1</factor>
+        <axis>
+            <x>0</x>
+            <y>1</y>
+            <z>0</z>
+        </axis>
+    </animation>
+
+    <animation>
+        <type>rotate</type>
+        <property>/orientation/roll-deg</property>
+        <factor>1</factor>
+        <axis>
+            <x>1</x>
+            <y>0</y>
+            <z>0</z>
+        </axis>
     </animation>
 
 </PropertyList>
