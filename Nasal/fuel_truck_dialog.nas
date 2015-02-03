@@ -100,7 +100,7 @@ var FuelTruckPositionUpdater = {
         var m = {
             parents: [FuelTruckPositionUpdater]
         };
-        m.loop = updateloop.UpdateLoop.new(components: [m], update_period: 1 / 25, enable: 0);
+        m.loop = updateloop.UpdateLoop.new(components: [m], update_period: 0.0, enable: 0);
         return m;
     },
 
@@ -171,10 +171,11 @@ var FuelTruckPositionUpdater = {
         truck.set_alt(elev_m + 3);
 
         var line_distance = fuel_point.direct_distance_to(truck);
+        var line_pitch_deg = atan(fuel_point.alt() - truck.alt(), line_distance_2d);
+
         setprop("/sim/model/fuel-truck/line-heading-deg", line_heading_deg);
         setprop("/sim/model/fuel-truck/line-length", line_distance);
-        var line_agl_m = getprop("/position/altitude-agl-ft") * globals.FT2M + pz;
-        setprop("/sim/model/fuel-truck/line-pitch-deg", math.acos(line_distance_2d/line_distance) * globals.R2D);
+        setprop("/sim/model/fuel-truck/line-pitch-deg", line_pitch_deg);
     }
 
 };
