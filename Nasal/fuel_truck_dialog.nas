@@ -155,20 +155,30 @@ var FuelTruckPositionUpdater = {
         setprop("/sim/model/fuel-truck/y-m", y);
         setprop("/sim/model/fuel-truck/yaw-deg", truck_heading - heading);
 
+        ######################################################################
+
         var fuel_point = geo.Coord.new(self);
 
         var px = getprop("/sim/model/fuel-truck/px");
         var py = getprop("/sim/model/fuel-truck/py");
         var pz = getprop("/sim/model/fuel-truck/pz");
 
+        var pitch_deg = getprop("/orientation/pitch-deg");
+        var roll_deg = getprop("/orientation/roll-deg");
+        (px, py, pz) = me._rotate_rpy(px, py, pz, -roll_deg, pitch_deg, -heading);
+
         var point_distance = math.sqrt(math.pow(px, 2) + math.pow(py, 2));
-        var point_course = geo.normdeg(atan(py, -px) + heading);
+        var point_course = geo.normdeg(atan(py, -px));
+
+        fuel_point.apply_course_distance(point_course, point_distance);
 
         var line_heading_deg = fuel_point.course_to(truck) - heading;
         var line_distance_2d = fuel_point.direct_distance_to(truck);
 
+        fuel_point.set_alt(fuel_point.alt() + pz);
+
         var elev_m = getprop("/sim/model/fuel-truck/ground-elev-m");
-        truck.set_alt(elev_m + 3);
+        truck.set_alt(elev_m + 1);
 
         var line_distance = fuel_point.direct_distance_to(truck);
         var line_pitch_deg = atan(fuel_point.alt() - truck.alt(), line_distance_2d);
@@ -176,6 +186,42 @@ var FuelTruckPositionUpdater = {
         setprop("/sim/model/fuel-truck/line-heading-deg", line_heading_deg);
         setprop("/sim/model/fuel-truck/line-length", line_distance);
         setprop("/sim/model/fuel-truck/line-pitch-deg", line_pitch_deg);
+    },
+
+    _rotate_rpy: func (x, y, z, g, b, a) {
+        var cos_a = cos(a);
+        var cos_b = cos(b);
+        var cos_y = cos(g);
+
+        var sin_a = sin(a);
+        var sin_b = sin(b);
+        var sin_y = sin(g);
+
+        var matrix = [
+            [
+                cos_a*cos_b,
+                sin_a*cos_b,
+                -sin_b
+            ],
+
+            [
+                cos_a*sin_b*sin_y - sin_a*cos_y,
+                sin_a*sin_b*sin_y + cos_a*cos_y,
+                cos_b*sin_y
+            ],
+
+            [
+                cos_a*sin_b*cos_y + sin_a*sin_y,
+                sin_a*sin_b*cos_y - cos_a*sin_y,
+                cos_b*cos_y
+            ]
+        ];
+
+        var x2 = x * matrix[0][0] + y * matrix[1][0] + z * matrix[2][0];
+        var y2 = x * matrix[0][1] + y * matrix[1][1] + z * matrix[2][1];
+        var z2 = x * matrix[0][2] + y * matrix[1][2] + z * matrix[2][2];
+
+        return [x2, y2, z2];
     }
 
 };

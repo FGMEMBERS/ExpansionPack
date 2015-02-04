@@ -99,4 +99,37 @@
         </axis>
     </animation>
 
+    <animation>
+        <type>translate</type>
+        <property>/sim/model/fuel-truck/px</property>
+        <factor>1.0</factor>
+        <axis>
+            <x>1</x>
+            <y>0</y>
+            <z>0</z>
+        </axis>
+    </animation>
+
+    <animation>
+        <type>translate</type>
+        <property>/sim/model/fuel-truck/py</property>
+        <factor>1.0</factor>
+        <axis>
+            <x>0</x>
+            <y>1</y>
+            <z>0</z>
+        </axis>
+    </animation>
+
+    <animation>
+        <type>translate</type>
+        <property>/sim/model/fuel-truck/pz</property>
+        <factor>1.0</factor>
+        <axis>
+            <x>0</x>
+            <y>0</y>
+            <z>1</z>
+        </axis>
+    </animation>
+
 </PropertyList>
