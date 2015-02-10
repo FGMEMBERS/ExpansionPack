@@ -15,7 +15,7 @@
 
 var version = {
     major: 1,
-    minor: 0
+    minor: 1
 };
 
 # Sources:
@@ -67,7 +67,7 @@ var rotate_from_body_xyz = func (x, y, z, phi, theta, psi) {
     var z2 = x * matrix[0][2] + y * matrix[1][2] + z * matrix[2][2];
 
     return [x2, y2, z2];
-}
+};
 
 var rotate_to_body_zyx = func (x, y, z, phi, theta, psi) {
     # Rotate point (x, y, z) around the origin from the inertial to the
@@ -107,4 +107,28 @@ var rotate_to_body_zyx = func (x, y, z, phi, theta, psi) {
     var z2 = x * matrix[0][2] + y * matrix[1][2] + z * matrix[2][2];
 
     return [x2, y2, z2];
-}
+};
+
+var get_point = func (x, y, z, roll_deg, pitch_deg, heading_deg) {
+    # Return a tuple of two geo.Coord points (in the inertial frame) of
+    # the current aircraft's position with the (x, y, z) offset (in body
+    # frame) applied. The first point has the same altitude as the
+    # aircraft and can be used for 2D calculations. The second point
+    # has the actual new altitude and can be used for 3D calculations.
+
+    var point = geo.aircraft_position();
+
+    (x, y, z) = math_ext.rotate_from_body_xyz(x, y, z, -roll_deg, pitch_deg, -heading_deg);
+
+    # Modify the lateral and longitudinal position
+    var distance = math.sqrt(math.pow(x, 2) + math.pow(y, 2));
+    var course   = geo.normdeg(math_ext.atan(y, -x));
+    point.apply_course_distance(course, distance);
+
+    var point_2d = geo.Coord.new(point);
+
+    # Modify the altitude of the position
+    point.set_alt(point.alt() + z);
+
+    return [point_2d, point];
+};
