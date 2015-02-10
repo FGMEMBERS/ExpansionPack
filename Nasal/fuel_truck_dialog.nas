@@ -79,7 +79,7 @@ setlistener("/systems/refuel-ground/refuel", func (node) {
     else {
         logger.screen.white("Refueling stopped");
         no_refuel_timer.stop();
-    } 
+    }
 }, 0, 0);
 
 setlistener("/systems/refuel-ground/drain", func (node) {
@@ -88,7 +88,7 @@ setlistener("/systems/refuel-ground/drain", func (node) {
     }
     else {
         logger.screen.white("Stopped draining fuel tanks");
-    } 
+    }
 }, 0, 0);
 
 var FuelTruckPositionUpdater = {
