@@ -151,25 +151,16 @@ var FuelTruckPositionUpdater = {
 
         ######################################################################
 
-        var fuel_point = geo.Coord.new(self);
-
         var px = getprop("/sim/model/fuel-truck/px");
         var py = getprop("/sim/model/fuel-truck/py");
         var pz = getprop("/sim/model/fuel-truck/pz");
 
         var pitch_deg = getprop("/orientation/pitch-deg");
         var roll_deg  = getprop("/orientation/roll-deg");
-        (px, py, pz) = math_ext.rotate_from_body_xyz(px, py, pz, -roll_deg, pitch_deg, -heading);
+        var (fuel_point_2d, fuel_point) = math_ext.get_point(px, py, pz, roll_deg, pitch_deg, heading);
 
-        var point_distance = math.sqrt(math.pow(px, 2) + math.pow(py, 2));
-        var point_course   = geo.normdeg(math_ext.atan(py, -px));
-
-        fuel_point.apply_course_distance(point_course, point_distance);
-
-        var line_heading_deg = fuel_point.course_to(me.truck) - heading;
-        var line_distance_2d = fuel_point.direct_distance_to(me.truck);
-
-        fuel_point.set_alt(fuel_point.alt() + pz);
+        var line_heading_deg = fuel_point_2d.course_to(me.truck) - heading;
+        var line_distance_2d = fuel_point_2d.direct_distance_to(me.truck);
 
         var elev_m = getprop("/sim/model/fuel-truck/ground-elev-m");
         me.truck.set_alt(elev_m + 1);

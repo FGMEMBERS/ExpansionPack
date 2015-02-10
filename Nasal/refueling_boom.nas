@@ -19,10 +19,9 @@ with("math_ext");
 with("updateloop");
 
 var version = {
-    major: 1,
+    major: 2,
     minor: 0
 };
-
 
 var RefuelingBoomPositionUpdater = {
 
@@ -53,23 +52,16 @@ var RefuelingBoomPositionUpdater = {
         var py = getprop("/refueling/origin-y-m");
         var pz = getprop("/refueling/origin-z-m");
 
-        var pitch_deg = getprop("/orientation/pitch-deg");
         var roll_deg  = getprop("/orientation/roll-deg");
+        var pitch_deg = getprop("/orientation/pitch-deg");
         var heading   = getprop("/orientation/heading-deg");
 
-        (px, py, pz) = math_ext.rotate_from_body_xyz(px, py, pz, -roll_deg, pitch_deg, -heading);
+        var (boom_origin_2d, boom_origin) = math_ext.get_point(px, py, pz, roll_deg, pitch_deg, heading);
 
-        var origin_distance = math.sqrt(math.pow(px, 2) + math.pow(py, 2));
-        var origin_course   = geo.normdeg(math_ext.atan(py, -px));
+        me.receiver.set_alt(boom_origin_2d.alt());
 
-        var boom_origin = geo.aircraft_position();
-        boom_origin.apply_course_distance(origin_course, origin_distance);
-
-        me.receiver.set_alt(boom_origin.alt());
-
-        var line_heading_deg = boom_origin.course_to(me.receiver) - heading;
-        var line_distance_2d = boom_origin.direct_distance_to(me.receiver);
-        boom_origin.set_alt(boom_origin.alt() + pz);
+        var line_heading_deg = boom_origin_2d.course_to(me.receiver) - heading;
+        var line_distance_2d = boom_origin_2d.direct_distance_to(me.receiver);
 
         me.receiver.set_alt(me.elev_m);
 
@@ -96,7 +88,5 @@ var RefuelingBoomPositionUpdater = {
         setprop("/refueling/boom-pitch-deg", xyz_pitch);
         setprop("/refueling/boom-length", xyz_distance);
     }
-};
 
-var refueling_boom_updater = RefuelingBoomPositionUpdater.new();
-refueling_boom_updater.enable();
+};
