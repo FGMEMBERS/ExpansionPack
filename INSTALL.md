@@ -1,4 +1,4 @@
 Installation
 ============
 
-1. Move the ExpansionPack/ folder in fg-expansion-pack-master/Aircraft/ to FlightGear's aircraft directory.
+1. Rename fg-expansion-pack-master to ExpansionPack and put the directory in FlightGear's Aircraft/ directory.
