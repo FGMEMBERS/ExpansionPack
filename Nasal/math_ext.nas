@@ -109,14 +109,16 @@ var rotate_to_body_zyx = func (x, y, z, phi, theta, psi) {
     return [x2, y2, z2];
 };
 
-var get_point = func (x, y, z, roll_deg, pitch_deg, heading_deg) {
+var get_point = func (x, y, z, roll_deg, pitch_deg, heading_deg, point=nil) {
     # Return a tuple of two geo.Coord points (in the inertial frame) of
     # the current aircraft's position with the (x, y, z) offset (in body
     # frame) applied. The first point has the same altitude as the
     # aircraft and can be used for 2D calculations. The second point
     # has the actual new altitude and can be used for 3D calculations.
 
-    var point = geo.aircraft_position();
+    if (point == nil) {
+        var point = geo.aircraft_position();
+    }
 
     (x, y, z) = math_ext.rotate_from_body_xyz(x, y, z, -roll_deg, pitch_deg, -heading_deg);
 
