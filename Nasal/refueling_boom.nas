@@ -186,6 +186,11 @@ var RefuelingBoomPositionUpdater = {
                 }
 
                 var fuel_point = me._get_aar_point_mp(a);
+
+                if (fuel_point == nil) {
+                    continue;
+                }
+
                 var distance = end_point.direct_distance_to(fuel_point);
 
                 var callsign = a.getNode("callsign").getValue();
@@ -221,11 +226,15 @@ var RefuelingBoomPositionUpdater = {
         var heading_deg = mp_node.getNode("orientation/true-heading-deg").getValue();
 
         # Get offset of AAR point
-        var offset_x = mp_node.getNode("refuel/offset-x-m", 0).getValue();
-        var offset_y = mp_node.getNode("refuel/offset-y-m", 0).getValue();
-        var offset_z = mp_node.getNode("refuel/offset-z-m", 0).getValue();
+        var x = mp_node.getNode("refuel/offset-x-m", 0);
+        var y = mp_node.getNode("refuel/offset-y-m", 0);
+        var z = mp_node.getNode("refuel/offset-z-m", 0);
 
-        var (fuel_point_2d, fuel_point) = math_ext.get_point(offset_x, offset_y, offset_z, roll_deg, pitch_deg, heading_deg, mp_position);
+        if (x == nil or y == nil or z == nil) {
+            return nil;
+        }
+
+        var (fuel_point_2d, fuel_point) = math_ext.get_point(x.getValue(), y.getValue(), z.getValue(), roll_deg, pitch_deg, heading_deg, mp_position);
         return fuel_point;
     }
 

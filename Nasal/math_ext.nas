@@ -120,11 +120,11 @@ var get_point = func (x, y, z, roll_deg, pitch_deg, heading_deg, point=nil) {
         var point = geo.aircraft_position();
     }
 
-    (x, y, z) = math_ext.rotate_from_body_xyz(x, y, z, -roll_deg, pitch_deg, -heading_deg);
+    (x, y, z) = rotate_from_body_xyz(x, y, z, -roll_deg, pitch_deg, -heading_deg);
 
     # Modify the lateral and longitudinal position
     var distance = math.sqrt(math.pow(x, 2) + math.pow(y, 2));
-    var course   = geo.normdeg(math_ext.atan(y, -x));
+    var course   = geo.normdeg(atan(y, -x));
     point.apply_course_distance(course, distance);
 
     var point_2d = geo.Coord.new(point);
