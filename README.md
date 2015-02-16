@@ -1,18 +1,9 @@
 Expansion Pack
 ==============
 
-fg-expansion-pack is a project that provides various modules for FlightGear aircraft.
+The FlightGear Expansion Pack is a project that provides various shared modules that can be used by aircraft to easily add certain features. It was created in order to reduce the amount of copy/paste that is happening among many aircraft in FlightGear and to promote code reuse.
 
-The expansion pack contains the following modules:
-
-* fuel
-* fuel_sequencer
-* fuel_truck_dialog
-* logger
-* math_ext
-* refueling_boom
-* raas
-* updateloop
+The documentation and the list of modules that the expansion pack contains can be viewed at the [GitHub Pages site][url-gh-pages].
 
 Importing a module
 ------------------
@@ -21,9 +12,9 @@ To use a module, first load the expansion pack's `init.nas` file and then call `
 
     io.include("Aircraft/ExpansionPack/Nasal/init.nas");
 
-    with("logger", "fuel");
+    with("logger");
 
-`with()` can accept a variable number of arguments. Each module name must be lower case and consist of the characters 'a' to 'z' only. After importing, the module is available via a variable that is named after the module's name:
+`with()` can accept a variable number of arguments, but it is recommended to import one module at a time. Each module name must be lower case and consist of the characters 'a' to 'z' only. After importing, the module is available via a variable that is named after the module's name:
 
     logger.info("Hello world!");
 
@@ -41,3 +32,5 @@ The version of the module can be checked with `check_version()`:
     check_version("fuel", 1, 0);
 
 The major number must be equal and the minor number must greater than or equal.
+
+  [url-gh-pages]: https://onox.github.io/fg-expansion-pack
