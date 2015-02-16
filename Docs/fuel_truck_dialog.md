@@ -46,6 +46,11 @@ Adding the 3D model and dialog
             <property>/sim/model/fuel-truck/enabled</property>
         </condition>
     </animation>
+
+    <model>
+        <name>fuel-line</name>
+        <path>Aircraft/ExpansionPack/Models/Airport/Fuel-Truck/fuel-line.xml</path>
+    </model>
     ```
 
 Adding sounds
@@ -104,7 +109,7 @@ Adding sounds
 4. Finally, you need to use the `/sim/model/fuel-truck/volume` property to control the volume of the `pushback.wav` file. Add the following to your aircraft's sound XML file. This is what the Osprey uses:
 
     ```xml
-    <fuel-truck-outside>
+    <fuel-truck>
         <name>fuel-truck-outside</name>
         <mode>looped</mode>
         <path>Aircraft/ExpansionPack/Sounds/pushback.wav</path>
@@ -123,7 +128,7 @@ Adding sounds
             <factor>0.3</factor>
             <offset>1.1</offset>
         </pitch>
-    </fuel-truck-outside>
+    </fuel-truck>
     ```
 
 Initial Position
@@ -142,6 +147,16 @@ The initial position of the fuel truck can be set in the aircraft's `-set.xml` f
             <x-m type="double">-15.0</x-m>
             <y-m type="double">-8.0</y-m>
             <yaw-deg type="double">90.0</yaw-deg>
+
+            <line-diameter type="double">120.0</line-diameter>
+            <line-length type="double">0.0</line-length>
+            <line-heading-deg type="double">0.0</line-heading-deg>
+            <line-pitch-deg type="double">0.0</line-pitch-deg>
+
+            <!-- Position of the origin of the fuel line -->
+            <px type="double">2.0</px>
+            <py type="double">-2.0</py>
+            <pz type="double">-1.7</pz>
         </fuel-truck>
     </model>
 </sim>
