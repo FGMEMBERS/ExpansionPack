@@ -3,7 +3,11 @@
 fuel_truck_dialog
 =================
 
-The ``fuel_truck_dialog`` module provides a 3D model of a fuel truck and a dialog to control the visibility of the truck and the fuel line. The dialog also provides a button to start and stop the refueling. Furthermore, the expansion pack provides a .wav file and a ``<filter>`` to help control the volume of the fuel truck.
+The ``fuel_truck_dialog`` module provides a 3D model of a fuel truck and
+a dialog to control the visibility of the truck and the fuel line. The
+dialog also provides a button to start and stop the refueling. Furthermore,
+the expansion pack provides a .wav file and a ``<filter>`` to help control
+the volume of the fuel truck.
 
 Adding the 3D model and dialog
 ------------------------------
@@ -58,7 +62,9 @@ Add the fuel truck 3D model to your aircraft's model XML file:
 Adding sounds
 -------------
 
-The expansion pack provides a ``pushback.wav`` and a ``<filter>`` for helping to control the volume of the fuel truck. First, import the ``<filter>`` to your ``-set.xml`` file:
+The expansion pack provides a ``pushback.wav`` and a ``<filter>`` for
+helping to control the volume of the fuel truck. First, import the
+``<filter>`` to your ``-set.xml`` file:
 
     .. code-block:: xml
 
@@ -66,7 +72,11 @@ The expansion pack provides a ``pushback.wav`` and a ``<filter>`` for helping to
             <path>Aircraft/ExpansionPack/Systems/fuel-truck.xml</path>
         </autopilot>
 
-Then create a file called ``Systems/sound-fuel-truck.xml`` and add it to your aircraft. In this file you need to add a gain ``<filter>`` that uses the ``/sim/model/fuel-truck/state`` property as the gain and outputs the volume to another property, for example ``/sim/model/fuel-truck/volume``. This is what the Osprey uses:
+Then create a file called ``Systems/sound-fuel-truck.xml`` and add it to
+your aircraft. In this file you need to add a gain ``<filter>`` that uses
+the ``/sim/model/fuel-truck/state`` property as the gain and outputs the
+volume to another property, for example ``/sim/model/fuel-truck/volume``.
+This is what the Osprey uses:
 
     .. code-block:: xml
 
@@ -108,7 +118,9 @@ Add the ``sound-fuel-truck.xml`` file to your ``-set.xml`` file:
             <path>Systems/sound-fuel-truck.xml</path>
         </autopilot>
 
-Finally, you need to use the ``/sim/model/fuel-truck/volume`` property to control the volume of the ``pushback.wav`` file. Add the following to your aircraft's sound XML file. For example:
+Finally, you need to use the ``/sim/model/fuel-truck/volume`` property to
+control the volume of the ``pushback.wav`` file. Add the following to your
+aircraft's sound XML file. For example:
 
     .. code-block:: xml
 
@@ -174,15 +186,26 @@ The initial position of the fuel truck can be set in the aircraft's ``-set.xml``
         </refuel-ground>
     </systems>
 
-The properties in ``/sim/model/fuel-truck/`` are used initially until they get overwritten by values calculated using the properties in ``/systems/refuel-ground/``. The same values must be used in order to avoid teleportation of the 3D model in the first second of it being visible.
+The properties in ``/sim/model/fuel-truck/`` are used initially until
+they get overwritten by values calculated using the properties in
+``/systems/refuel-ground/``. The same values must be used in order to
+avoid teleportation of the 3D model in the first second of it being visible.
 
 Properties
 ----------
 
-The Fuel Truck dialog depends on several properties in ``/systems/refuel-ground/`` and ``/sim/model/fuel-truck/``. It is recommended to use the dialog in conjunction with a ``GroundRefuelProducer`` component from the `fuel` module.
+The Fuel Truck dialog depends on several properties in
+``/systems/refuel-ground/`` and ``/sim/model/fuel-truck/``. It is recommended
+to use the dialog in conjunction with a ``GroundRefuelProducer`` component
+from the `fuel` module.
 
-* ``/systems/refuel-ground/level-gal_us`` is the current amount of gallons in the fuel truck.
+* ``/systems/refuel-ground/level-gal_us`` is the current amount of gallons
+  in the fuel truck.
 
-* ``/systems/refuel-ground/refuel`` is true if the fuel system should extract fuel out of the fuel truck.
+* ``/systems/refuel-ground/refuel`` is true if the fuel system should
+  extract fuel out of the fuel truck.
 
-* ``/systems/fuel/producer-ground-refuel-fuel-truck/current-flow-gal_us-ps`` indicates the fuel flow in gallons per second. A value greater than zero indicates the aircraft is actually being refueled. This is shown in the 3D model of the fuel truck by the orange light on top of the fuel truck.
+* ``/systems/fuel/producer-ground-refuel-fuel-truck/current-flow-gal_us-ps``
+  indicates the fuel flow in gallons per second. A value greater than zero
+  indicates the aircraft is actually being refueled. This is shown in the
+  3D model of the fuel truck by the orange light on top of the fuel truck.
