@@ -24,6 +24,8 @@ Contents:
    :maxdepth: 2
 
    installation
+   usage
+   modules
 
 
 Indices and tables
