@@ -21,6 +21,9 @@ var version = {
 var min = std.min;
 var max = std.max;
 
+# Initialize debug property
+var show_debug = props.globals.initNode("/systems/fuel/debug", 0, "BOOL");
+
 var FuelComponent = {
 
     new: func (name) {
@@ -424,14 +427,14 @@ var ServiceableFuelComponentMixin = {
     },
 
     enable: func {
-        if (!me.is_enabled()) {
+        if (!me.is_enabled() and show_debug.getBoolValue()) {
             debug.dump(sprintf("Enabling component %s", me.get_name()));
         }
         me.serviceable.setBoolValue(1);
     },
 
     disable: func {
-        if (me.is_enabled()) {
+        if (me.is_enabled() and show_debug.getBoolValue()) {
             debug.dump(sprintf("Disabling component %s", me.get_name()));
         }
         me.serviceable.setBoolValue(0);
@@ -658,7 +661,7 @@ var AbstractPump = {
             var flow = me.source.prepare_subtract_fuel_flow(actual_flow, dt);
 
             assert(abs(flow - actual_flow) <= 0.0000001);
-            if (flow > 0.0) {
+            if (flow > 0.0 and show_debug.getBoolValue()) {
                 debug.dump(sprintf("%s transferred %.4f out of %.4f", me.get_name(), flow, available_flow));
             }
 
@@ -889,7 +892,7 @@ var AirRefuelProducer = {
     execute_fuel_flow: func {
         if (me.provided_gal_us != nil) {
             me._add_current_flow(me.provided_gal_us);
-            if (me.provided_gal_us > 0.0) {
+            if (me.provided_gal_us > 0.0 and show_debug.getBoolValue()) {
                 debug.dump("Receiving " ~ me.provided_gal_us ~ " gal of fuel from tanker");
             }
         }
@@ -1003,7 +1006,7 @@ var GroundRefuelProducer = {
     execute_fuel_flow: func {
         if (me.provided_gal_us != nil) {
             me._add_current_flow(me.provided_gal_us);
-            if (me.provided_gal_us > 0.0) {
+            if (me.provided_gal_us > 0.0 and show_debug.getBoolValue()) {
                 debug.dump("Receiving " ~ me.provided_gal_us ~ " gal of fuel from fuel truck");
             }
 
@@ -1059,7 +1062,9 @@ var Network = {
 
     add: func (component) {
         me.components.append(component);
-        debug.dump(sprintf("Component '%s' added!", component.get_name()));
+        if (show_debug.getBoolValue()) {
+            debug.dump(sprintf("Added component %s", component.get_name()));
+        }
 
         # Add if pump
         if (isa(component, AbstractPump)) {
