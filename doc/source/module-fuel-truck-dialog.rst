@@ -197,7 +197,7 @@ Properties
 The Fuel Truck dialog depends on several properties in
 ``/systems/refuel-ground/`` and ``/sim/model/fuel-truck/``. It is recommended
 to use the dialog in conjunction with a ``GroundRefuelProducer`` component
-from the `fuel` module.
+from the :ref:`module-fuel` module.
 
 * ``/systems/refuel-ground/level-gal_us`` is the current amount of gallons
   in the fuel truck.
