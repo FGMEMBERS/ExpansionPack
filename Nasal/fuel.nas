@@ -742,6 +742,10 @@ var AbstractConsumer = {
         return m;
     },
 
+    test_subtract_fuel_flow: func (flow, dt) {
+        die("Illegal call to AbstractConsumer.test_subtract_fuel_flow: consumer cannot provide fuel");
+    },
+
     prepare_subtract_fuel_flow: func (flow, dt) {
         die("Illegal call to AbstractConsumer.prepare_subtract_fuel_flow: consumer cannot provide fuel");
     },
@@ -790,6 +794,17 @@ var EngineConsumer = {
         return m;
     },
 
+    test_add_fuel_flow: func (flow, dt) {
+        # Note: dt is not needed here
+        assert(debug.isnan(flow) != 1.0);
+        assert(flow >= 0.0);
+
+        var consumed_gal_us = me.engine(flow, dt);
+
+        assert(0.0 <= consumed_gal_us and consumed_gal_us <= flow);
+        return consumed_gal_us;
+    },
+
     prepare_add_fuel_flow: func (flow, dt) {
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0.0);
@@ -814,11 +829,19 @@ var JettisonConsumer = {
         return m;
     },
 
+    test_add_fuel_flow: func (flow, dt) {
+        # Note: dt is not needed here
+        assert(debug.isnan(flow) != 1.0);
+        assert(flow >= 0.0);
+
+        return flow;
+    },
+
     prepare_add_fuel_flow: func (flow, dt) {
         assert(debug.isnan(flow) != 1.0);
         assert(flow >= 0.0);
 
-        me.consumed_gal_us = flow * dt;
+        me.consumed_gal_us = flow;
 
         return me.consumed_gal_us;
     }
@@ -832,6 +855,10 @@ var AbstractProducer = {
             parents: [AbstractProducer, FuelComponent.new("producer-" ~ name)]
         };
         return m;
+    },
+
+    test_add_fuel_flow: func (flow, dt) {
+        die("Illegal call to AbstractProducer.test_add_fuel_flow: provider cannot consume fuel");
     },
 
     prepare_add_fuel_flow: func (flow, dt) {
