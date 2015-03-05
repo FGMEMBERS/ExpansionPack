@@ -1,4 +1,5 @@
 .. index:: single: fuel_truck_dialog
+.. _module-fuel_truck_dialog:
 
 fuel_truck_dialog
 =================
@@ -58,6 +59,52 @@ Add the fuel truck 3D model to your aircraft's model XML file:
             <name>fuel-line</name>
             <path>Aircraft/ExpansionPack/Models/Airport/Fuel-Truck/fuel-line.xml</path>
         </model>
+
+Initial position
+----------------
+
+The initial position of the fuel truck can be set in the aircraft's ``-set.xml`` file:
+
+.. code-block:: xml
+
+    <sim>
+        <model>
+            <fuel-truck>
+                <!-- Initial position of the fuel truck. These values are
+                     used for a split second before they are overwritten
+                     by FuelTruckPositionUpdater from the ExpansionPack.
+                -->
+                <x-m type="double">-15.0</x-m>
+                <y-m type="double">-8.0</y-m>
+                <yaw-deg type="double">90.0</yaw-deg>
+
+                <line-diameter type="double">120.0</line-diameter>
+                <line-length type="double">0.0</line-length>
+                <line-heading-deg type="double">0.0</line-heading-deg>
+                <line-pitch-deg type="double">0.0</line-pitch-deg>
+
+                <!-- Position of the origin of the fuel line -->
+                <px type="double">2.0</px>
+                <py type="double">-2.0</py>
+                <pz type="double">-1.7</pz>
+            </fuel-truck>
+        </model>
+    </sim>
+
+    <systems>
+        <refuel-ground>
+            <level-gal_us type="double">3200.0</level-gal_us>
+
+            <x-m type="double">-15.0</x-m>
+            <y-m type="double">-8.0</y-m>
+            <yaw-deg type="double">90.0</yaw-deg>
+        </refuel-ground>
+    </systems>
+
+The properties in ``/sim/model/fuel-truck/`` are used initially until
+they get overwritten by values calculated using the properties in
+``/systems/refuel-ground/``. The same values must be used in order to
+avoid teleportation of the 3D model in the first second of it being visible.
 
 Adding sounds
 -------------
@@ -144,52 +191,6 @@ aircraft's sound XML file. For example:
                 <offset>1.1</offset>
             </pitch>
         </fuel-truck>
-
-Initial Position
-----------------
-
-The initial position of the fuel truck can be set in the aircraft's ``-set.xml`` file:
-
-.. code-block:: xml
-
-    <sim>
-        <model>
-            <fuel-truck>
-                <!-- Initial position of the fuel truck. These values are
-                     used for a split second before they are overwritten
-                     by FuelTruckPositionUpdater from the ExpansionPack.
-                -->
-                <x-m type="double">-15.0</x-m>
-                <y-m type="double">-8.0</y-m>
-                <yaw-deg type="double">90.0</yaw-deg>
-
-                <line-diameter type="double">120.0</line-diameter>
-                <line-length type="double">0.0</line-length>
-                <line-heading-deg type="double">0.0</line-heading-deg>
-                <line-pitch-deg type="double">0.0</line-pitch-deg>
-
-                <!-- Position of the origin of the fuel line -->
-                <px type="double">2.0</px>
-                <py type="double">-2.0</py>
-                <pz type="double">-1.7</pz>
-            </fuel-truck>
-        </model>
-    </sim>
-
-    <systems>
-        <refuel-ground>
-            <level-gal_us type="double">3200.0</level-gal_us>
-
-            <x-m type="double">-15.0</x-m>
-            <y-m type="double">-8.0</y-m>
-            <yaw-deg type="double">90.0</yaw-deg>
-        </refuel-ground>
-    </systems>
-
-The properties in ``/sim/model/fuel-truck/`` are used initially until
-they get overwritten by values calculated using the properties in
-``/systems/refuel-ground/``. The same values must be used in order to
-avoid teleportation of the 3D model in the first second of it being visible.
 
 Properties
 ----------
