@@ -16,6 +16,7 @@ Adding the 3D model and dialog
 Import the fuel_truck_model by adding the following to a .nas file:
 
     .. code-block:: javascript
+       :linenos:
 
         io.include("Aircraft/ExpansionPack/Nasal/init.nas");
 
@@ -24,6 +25,7 @@ Import the fuel_truck_model by adding the following to a .nas file:
 Add an ``<item>`` to your aircraft's ``<menu>``:
 
     .. code-block:: xml
+       :linenos:
 
         <item>
             <label>-- Ground Services --</label>
@@ -41,6 +43,7 @@ Add an ``<item>`` to your aircraft's ``<menu>``:
 Add the fuel truck 3D model to your aircraft's model XML file:
 
     .. code-block:: xml
+       :linenos:
 
         <model>
             <name>fuel-truck</name>
@@ -66,6 +69,7 @@ Initial position
 The initial position of the fuel truck can be set in the aircraft's ``-set.xml`` file:
 
 .. code-block:: xml
+   :linenos:
 
     <sim>
         <model>
@@ -114,6 +118,7 @@ helping to control the volume of the fuel truck. First, import the
 ``<filter>`` to your ``-set.xml`` file:
 
     .. code-block:: xml
+       :linenos:
 
         <autopilot>
             <path>Aircraft/ExpansionPack/Systems/fuel-truck.xml</path>
@@ -126,6 +131,7 @@ volume to another property, for example ``/sim/model/fuel-truck/volume``.
 This is what the Osprey uses:
 
     .. code-block:: xml
+       :linenos:
 
         <filter>
             <update-interval-secs type="double">0.1</update-interval-secs>
@@ -160,6 +166,7 @@ This is what the Osprey uses:
 Add the ``sound-fuel-truck.xml`` file to your ``-set.xml`` file:
 
     .. code-block:: xml
+       :linenos:
 
         <autopilot>
             <path>Systems/sound-fuel-truck.xml</path>
@@ -170,6 +177,7 @@ control the volume of the ``pushback.wav`` file. Add the following to your
 aircraft's sound XML file. For example:
 
     .. code-block:: xml
+       :linenos:
 
         <fuel-truck>
             <name>fuel-truck-outside</name>
