@@ -33,4 +33,4 @@ The version of the module can be checked with `check_version()`:
 
 The major number must be equal and the minor number must greater than or equal.
 
-  [url-gh-pages]: https://onox.github.io/fg-expansion-pack
+  [url-gh-pages]: https://onox.github.io/ExpansionPack
