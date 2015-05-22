@@ -21,6 +21,7 @@ var version = {
 # Sources:
 #
 #   [1] https://www.chrobotics.com/library/understanding-euler-angles
+#   [2] https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix
 
 var sin = func(a) { math.sin(a * globals.D2R) }
 var cos = func(a) { math.cos(a * globals.D2R) }
@@ -33,6 +34,8 @@ var rotate_from_body_xyz = func (x, y, z, phi, theta, psi) {
     # Rotate point (x, y, z) around the origin from body to inertial
     # frame [1] using a counterclockwise rotation of phi around the x-axis,
     # of theta around the y-axis, and then of psi around the z-axis.
+    #
+    # This conversion uses the Tait-Bryan Z1Y2X3 matrix [2].
 
     var cos_psi   = cos(psi);
     var cos_theta = cos(theta);
@@ -73,6 +76,8 @@ var rotate_to_body_zyx = func (x, y, z, phi, theta, psi) {
     # Rotate point (x, y, z) around the origin from the inertial to the
     # body frame [1] using a counterclockwise rotation of psi around the z-axis,
     # of theta around the y-axis, and then of phi around the x-axis.
+    #
+    # This conversion uses the transposed Tait-Bryan Z1Y2X3 matrix [2].
 
     var cos_psi   = cos(psi);
     var cos_theta = cos(theta);
