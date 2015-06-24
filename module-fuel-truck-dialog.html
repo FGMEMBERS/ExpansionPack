@@ -5,6 +5,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>3.3. fuel_truck_dialog &mdash; FlightGear Expansion Pack 1.0 documentation</title>
@@ -14,7 +15,6 @@
   
 
   
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   
   
@@ -28,13 +28,15 @@
   
 
   
+
+  
     <link rel="top" title="FlightGear Expansion Pack 1.0 documentation" href="index.html"/>
         <link rel="up" title="3. Modules" href="modules.html"/>
         <link rel="next" title="3.4. logger" href="module-logger.html"/>
         <link rel="prev" title="3.2. fuel_sequencer" href="module-fuel-sequencer.html"/> 
 
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
@@ -45,20 +47,32 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="index.html" class="fa fa-home"> FlightGear Expansion Pack</a>
-        <div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> FlightGear Expansion Pack
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+        
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
-        
-            <ul class="current">
+          
+          
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">1. Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#dependencies">1.1. Dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-from-master-zip">1.2. Installing from master.zip</a></li>
@@ -71,10 +85,28 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">3. Modules</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="module-fuel.html">3.1. fuel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module-fuel.html">3.1. fuel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="module-fuel.html#components">3.1.1. Components</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="module-fuel.html#transferablefuelcomponent">3.1.1.1. TransferableFuelComponent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="module-fuel.html#serviceablefuelcomponentmixin">3.1.1.2. ServiceableFuelComponentMixin</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="module-fuel.html#network">3.1.2. Network</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="module-fuel-sequencer.html">3.2. fuel_sequencer</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">3.3. fuel_truck_dialog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module-logger.html">3.4. logger</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">3.3. fuel_truck_dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#adding-the-3d-model-and-dialog">3.3.1. Adding the 3D model and dialog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initial-position">3.3.2. Initial position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-sounds">3.3.3. Adding sounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#properties">3.3.4. Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="module-logger.html">3.4. logger</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="module-logger.html#printing-text-to-the-terminal">3.4.1. Printing text to the terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="module-logger.html#showing-colored-messages-on-the-screen">3.4.2. Showing colored messages on the screen</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="module-math-ext.html">3.5. math_ext</a></li>
 <li class="toctree-l2"><a class="reference internal" href="module-refueling-boom.html">3.6. refueling_boom</a></li>
 <li class="toctree-l2"><a class="reference internal" href="module-raas.html">3.7. raas</a></li>
@@ -83,6 +115,7 @@
 </li>
 </ul>
 
+          
         
       </div>
       &nbsp;
@@ -109,212 +142,326 @@
     <li>3.3. fuel_truck_dialog</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/module-fuel-truck-dialog.txt" rel="nofollow"> View page source</a>
+          
+            <a href="_sources/module-fuel-truck-dialog.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
   </ul>
   <hr/>
 </div>
-          <div role="main">
+          <div role="main" class="document">
             
   <div class="section" id="fuel-truck-dialog">
-<span id="index-0"></span><h1>3.3. fuel_truck_dialog<a class="headerlink" href="#fuel-truck-dialog" title="Permalink to this headline">¶</a></h1>
-<p>The <tt class="docutils literal"><span class="pre">fuel_truck_dialog</span></tt> module provides a 3D model of a fuel truck and
+<span id="module-fuel-truck-dialog"></span><span id="index-0"></span><h1>3.3. fuel_truck_dialog<a class="headerlink" href="#fuel-truck-dialog" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal"><span class="pre">fuel_truck_dialog</span></code> module provides a 3D model of a fuel truck and
 a dialog to control the visibility of the truck and the fuel line. The
 dialog also provides a button to start and stop the refueling. Furthermore,
-the expansion pack provides a .wav file and a <tt class="docutils literal"><span class="pre">&lt;filter&gt;</span></tt> to help control
+the expansion pack provides a .wav file and a <code class="docutils literal"><span class="pre">&lt;filter&gt;</span></code> to help control
 the volume of the fuel truck.</p>
 <div class="section" id="adding-the-3d-model-and-dialog">
 <h2>3.3.1. Adding the 3D model and dialog<a class="headerlink" href="#adding-the-3d-model-and-dialog" title="Permalink to this headline">¶</a></h2>
 <p>Import the fuel_truck_model by adding the following to a .nas file:</p>
 <blockquote>
-<div><div class="highlight-javascript"><div class="highlight"><pre><span class="nx">io</span><span class="p">.</span><span class="nx">include</span><span class="p">(</span><span class="s2">&quot;Aircraft/ExpansionPack/Nasal/init.nas&quot;</span><span class="p">);</span>
+<div><div class="highlight-javascript"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre> <span class="nx">io</span><span class="p">.</span><span class="nx">include</span><span class="p">(</span><span class="s2">&quot;Aircraft/ExpansionPack/Nasal/init.nas&quot;</span><span class="p">);</span>
 
-<span class="kd">with</span><span class="p">(</span><span class="s2">&quot;fuel_truck_dialog&quot;</span><span class="p">);</span>
+ <span class="kd">with</span><span class="p">(</span><span class="s2">&quot;fuel_truck_dialog&quot;</span><span class="p">);</span>
 </pre></div>
-</div>
+</td></tr></table></div>
 </div></blockquote>
-<p>Add an <tt class="docutils literal"><span class="pre">&lt;item&gt;</span></tt> to your aircraft&#8217;s <tt class="docutils literal"><span class="pre">&lt;menu&gt;</span></tt>:</p>
+<p>Add an <code class="docutils literal"><span class="pre">&lt;item&gt;</span></code> to your aircraft&#8217;s <code class="docutils literal"><span class="pre">&lt;menu&gt;</span></code>:</p>
 <blockquote>
-<div><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;item&gt;</span>
-    <span class="nt">&lt;label&gt;</span>-- Ground Services --<span class="nt">&lt;/label&gt;</span>
-    <span class="nt">&lt;enabled</span> <span class="na">type=</span><span class="s">&quot;bool&quot;</span><span class="nt">&gt;</span>false<span class="nt">&lt;/enabled&gt;</span>
-<span class="nt">&lt;/item&gt;</span>
+<div><div class="highlight-xml"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12</pre></div></td><td class="code"><div class="highlight"><pre> <span class="nt">&lt;item&gt;</span>
+     <span class="nt">&lt;label&gt;</span>-- Ground Services --<span class="nt">&lt;/label&gt;</span>
+     <span class="nt">&lt;enabled</span> <span class="na">type=</span><span class="s">&quot;bool&quot;</span><span class="nt">&gt;</span>false<span class="nt">&lt;/enabled&gt;</span>
+ <span class="nt">&lt;/item&gt;</span>
 
-<span class="nt">&lt;item&gt;</span>
-    <span class="nt">&lt;label&gt;</span>Fuel Truck<span class="nt">&lt;/label&gt;</span>
-    <span class="nt">&lt;binding&gt;</span>
-        <span class="nt">&lt;command&gt;</span>dialog-show<span class="nt">&lt;/command&gt;</span>
-        <span class="nt">&lt;dialog-name&gt;</span>fuel-truck<span class="nt">&lt;/dialog-name&gt;</span>
-    <span class="nt">&lt;/binding&gt;</span>
-<span class="nt">&lt;/item&gt;</span>
+ <span class="nt">&lt;item&gt;</span>
+     <span class="nt">&lt;label&gt;</span>Fuel Truck<span class="nt">&lt;/label&gt;</span>
+     <span class="nt">&lt;binding&gt;</span>
+         <span class="nt">&lt;command&gt;</span>dialog-show<span class="nt">&lt;/command&gt;</span>
+         <span class="nt">&lt;dialog-name&gt;</span>fuel-truck<span class="nt">&lt;/dialog-name&gt;</span>
+     <span class="nt">&lt;/binding&gt;</span>
+ <span class="nt">&lt;/item&gt;</span>
 </pre></div>
-</div>
+</td></tr></table></div>
 </div></blockquote>
 <p>Add the fuel truck 3D model to your aircraft&#8217;s model XML file:</p>
 <blockquote>
-<div><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;model&gt;</span>
-    <span class="nt">&lt;name&gt;</span>fuel-truck<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;path&gt;</span>Aircraft/ExpansionPack/Models/Airport/Fuel-Truck/fuel-truck.xml<span class="nt">&lt;/path&gt;</span>
-<span class="nt">&lt;/model&gt;</span>
+<div><div class="highlight-xml"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</pre></div></td><td class="code"><div class="highlight"><pre> <span class="nt">&lt;model&gt;</span>
+     <span class="nt">&lt;name&gt;</span>fuel-truck<span class="nt">&lt;/name&gt;</span>
+     <span class="nt">&lt;path&gt;</span>Aircraft/ExpansionPack/Models/Airport/Fuel-Truck/fuel-truck.xml<span class="nt">&lt;/path&gt;</span>
+ <span class="nt">&lt;/model&gt;</span>
 
-<span class="nt">&lt;animation&gt;</span>
-    <span class="nt">&lt;type&gt;</span>select<span class="nt">&lt;/type&gt;</span>
-    <span class="nt">&lt;object-name&gt;</span>fuel-truck<span class="nt">&lt;/object-name&gt;</span>
-    <span class="nt">&lt;condition&gt;</span>
-        <span class="nt">&lt;property&gt;</span>/sim/model/fuel-truck/enabled<span class="nt">&lt;/property&gt;</span>
-    <span class="nt">&lt;/condition&gt;</span>
-<span class="nt">&lt;/animation&gt;</span>
+ <span class="nt">&lt;animation&gt;</span>
+     <span class="nt">&lt;type&gt;</span>select<span class="nt">&lt;/type&gt;</span>
+     <span class="nt">&lt;object-name&gt;</span>fuel-truck<span class="nt">&lt;/object-name&gt;</span>
+     <span class="nt">&lt;condition&gt;</span>
+         <span class="nt">&lt;property&gt;</span>/sim/model/fuel-truck/enabled<span class="nt">&lt;/property&gt;</span>
+     <span class="nt">&lt;/condition&gt;</span>
+ <span class="nt">&lt;/animation&gt;</span>
 
-<span class="nt">&lt;model&gt;</span>
-    <span class="nt">&lt;name&gt;</span>fuel-line<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;path&gt;</span>Aircraft/ExpansionPack/Models/Airport/Fuel-Truck/fuel-line.xml<span class="nt">&lt;/path&gt;</span>
-<span class="nt">&lt;/model&gt;</span>
+ <span class="nt">&lt;model&gt;</span>
+     <span class="nt">&lt;name&gt;</span>fuel-line<span class="nt">&lt;/name&gt;</span>
+     <span class="nt">&lt;path&gt;</span>Aircraft/ExpansionPack/Models/Airport/Fuel-Truck/fuel-line.xml<span class="nt">&lt;/path&gt;</span>
+ <span class="nt">&lt;/model&gt;</span>
 </pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="adding-sounds">
-<h2>3.3.2. Adding sounds<a class="headerlink" href="#adding-sounds" title="Permalink to this headline">¶</a></h2>
-<p>The expansion pack provides a <tt class="docutils literal"><span class="pre">pushback.wav</span></tt> and a <tt class="docutils literal"><span class="pre">&lt;filter&gt;</span></tt> for
-helping to control the volume of the fuel truck. First, import the
-<tt class="docutils literal"><span class="pre">&lt;filter&gt;</span></tt> to your <tt class="docutils literal"><span class="pre">-set.xml</span></tt> file:</p>
-<blockquote>
-<div><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;autopilot&gt;</span>
-    <span class="nt">&lt;path&gt;</span>Aircraft/ExpansionPack/Systems/fuel-truck.xml<span class="nt">&lt;/path&gt;</span>
-<span class="nt">&lt;/autopilot&gt;</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p>Then create a file called <tt class="docutils literal"><span class="pre">Systems/sound-fuel-truck.xml</span></tt> and add it to
-your aircraft. In this file you need to add a gain <tt class="docutils literal"><span class="pre">&lt;filter&gt;</span></tt> that uses
-the <tt class="docutils literal"><span class="pre">/sim/model/fuel-truck/state</span></tt> property as the gain and outputs the
-volume to another property, for example <tt class="docutils literal"><span class="pre">/sim/model/fuel-truck/volume</span></tt>.
-This is what the Osprey uses:</p>
-<blockquote>
-<div><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;filter&gt;</span>
-    <span class="nt">&lt;update-interval-secs</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>0.1<span class="nt">&lt;/update-interval-secs&gt;</span>
-    <span class="nt">&lt;type&gt;</span>gain<span class="nt">&lt;/type&gt;</span>
-    <span class="nt">&lt;gain&gt;</span>
-        <span class="nt">&lt;property&gt;</span>/sim/model/fuel-truck/state<span class="nt">&lt;/property&gt;</span>
-    <span class="nt">&lt;/gain&gt;</span>
-    <span class="nt">&lt;input&gt;</span>
-        <span class="nt">&lt;condition&gt;</span>
-            <span class="nt">&lt;property&gt;</span>/sim/current-view/internal<span class="nt">&lt;/property&gt;</span>
-        <span class="nt">&lt;/condition&gt;</span>
-        <span class="nt">&lt;value&gt;</span>0.2<span class="nt">&lt;/value&gt;</span>
-        <span class="nt">&lt;offset&gt;</span>
-            <span class="nt">&lt;expression&gt;</span>
-                <span class="nt">&lt;product&gt;</span>
-                    <span class="c">&lt;!-- Boost the volume if both cockpit and starboard doors are open --&gt;</span>
-                    <span class="nt">&lt;property&gt;</span>/instrumentation/doors/cockpitdoor/position-norm<span class="nt">&lt;/property&gt;</span>
-                    <span class="nt">&lt;property&gt;</span>/instrumentation/doors/crewup/position-norm<span class="nt">&lt;/property&gt;</span>
-                    <span class="nt">&lt;value&gt;</span>0.4<span class="nt">&lt;/value&gt;</span>
-                <span class="nt">&lt;/product&gt;</span>
-            <span class="nt">&lt;/expression&gt;</span>
-        <span class="nt">&lt;/offset&gt;</span>
-    <span class="nt">&lt;/input&gt;</span>
-    <span class="nt">&lt;input&gt;</span>
-        <span class="nt">&lt;value&gt;</span>1.0<span class="nt">&lt;/value&gt;</span>
-    <span class="nt">&lt;/input&gt;</span>
-    <span class="nt">&lt;output&gt;</span>
-        <span class="nt">&lt;property&gt;</span>/sim/model/fuel-truck/volume<span class="nt">&lt;/property&gt;</span>
-    <span class="nt">&lt;/output&gt;</span>
-<span class="nt">&lt;/filter&gt;</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p>Add the <tt class="docutils literal"><span class="pre">sound-fuel-truck.xml</span></tt> file to your <tt class="docutils literal"><span class="pre">-set.xml</span></tt> file:</p>
-<blockquote>
-<div><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;autopilot&gt;</span>
-    <span class="nt">&lt;path&gt;</span>Systems/sound-fuel-truck.xml<span class="nt">&lt;/path&gt;</span>
-<span class="nt">&lt;/autopilot&gt;</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p>Finally, you need to use the <tt class="docutils literal"><span class="pre">/sim/model/fuel-truck/volume</span></tt> property to
-control the volume of the <tt class="docutils literal"><span class="pre">pushback.wav</span></tt> file. Add the following to your
-aircraft&#8217;s sound XML file. For example:</p>
-<blockquote>
-<div><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;fuel-truck&gt;</span>
-    <span class="nt">&lt;name&gt;</span>fuel-truck-outside<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;mode&gt;</span>looped<span class="nt">&lt;/mode&gt;</span>
-    <span class="nt">&lt;path&gt;</span>Aircraft/ExpansionPack/Sounds/pushback.wav<span class="nt">&lt;/path&gt;</span>
-    <span class="nt">&lt;condition&gt;</span>
-        <span class="nt">&lt;property&gt;</span>/sim/model/fuel-truck/enabled<span class="nt">&lt;/property&gt;</span>
-    <span class="nt">&lt;/condition&gt;</span>
-    <span class="nt">&lt;volume&gt;</span>
-        <span class="nt">&lt;property&gt;</span>/sim/model/fuel-truck/volume<span class="nt">&lt;/property&gt;</span>
-        <span class="nt">&lt;factor&gt;</span>1.0<span class="nt">&lt;/factor&gt;</span>
-        <span class="nt">&lt;offset&gt;</span>0.0<span class="nt">&lt;/offset&gt;</span>
-        <span class="nt">&lt;min&gt;</span>0.1<span class="nt">&lt;/min&gt;</span>
-        <span class="nt">&lt;max&gt;</span>7.0<span class="nt">&lt;/max&gt;</span>
-    <span class="nt">&lt;/volume&gt;</span>
-    <span class="nt">&lt;pitch&gt;</span>
-        <span class="nt">&lt;property&gt;</span>/sim/model/fuel-truck/state<span class="nt">&lt;/property&gt;</span>
-        <span class="nt">&lt;factor&gt;</span>0.3<span class="nt">&lt;/factor&gt;</span>
-        <span class="nt">&lt;offset&gt;</span>1.1<span class="nt">&lt;/offset&gt;</span>
-    <span class="nt">&lt;/pitch&gt;</span>
-<span class="nt">&lt;/fuel-truck&gt;</span>
-</pre></div>
-</div>
+</td></tr></table></div>
 </div></blockquote>
 </div>
 <div class="section" id="initial-position">
-<h2>3.3.3. Initial Position<a class="headerlink" href="#initial-position" title="Permalink to this headline">¶</a></h2>
-<p>The initial position of the fuel truck can be set in the aircraft&#8217;s <tt class="docutils literal"><span class="pre">-set.xml</span></tt> file:</p>
-<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;sim&gt;</span>
-    <span class="nt">&lt;model&gt;</span>
-        <span class="nt">&lt;fuel-truck&gt;</span>
-            <span class="c">&lt;!-- Initial position of the fuel truck. These values are</span>
-<span class="c">                 used for a split second before they are overwritten</span>
-<span class="c">                 by FuelTruckPositionUpdater from the ExpansionPack.</span>
-<span class="c">            --&gt;</span>
-            <span class="nt">&lt;x-m</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>-15.0<span class="nt">&lt;/x-m&gt;</span>
-            <span class="nt">&lt;y-m</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>-8.0<span class="nt">&lt;/y-m&gt;</span>
-            <span class="nt">&lt;yaw-deg</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>90.0<span class="nt">&lt;/yaw-deg&gt;</span>
+<h2>3.3.2. Initial position<a class="headerlink" href="#initial-position" title="Permalink to this headline">¶</a></h2>
+<p>The initial position of the fuel truck can be set in the aircraft&#8217;s <code class="docutils literal"><span class="pre">-set.xml</span></code> file:</p>
+<div class="highlight-xml"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33</pre></div></td><td class="code"><div class="highlight"><pre> <span class="nt">&lt;sim&gt;</span>
+     <span class="nt">&lt;model&gt;</span>
+         <span class="nt">&lt;fuel-truck&gt;</span>
+             <span class="c">&lt;!-- Initial position of the fuel truck. These values are</span>
+<span class="c">                  used for a split second before they are overwritten</span>
+<span class="c">                  by FuelTruckPositionUpdater from the ExpansionPack.</span>
+<span class="c">             --&gt;</span>
+             <span class="nt">&lt;x-m</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>-15.0<span class="nt">&lt;/x-m&gt;</span>
+             <span class="nt">&lt;y-m</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>-8.0<span class="nt">&lt;/y-m&gt;</span>
+             <span class="nt">&lt;yaw-deg</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>90.0<span class="nt">&lt;/yaw-deg&gt;</span>
 
-            <span class="nt">&lt;line-diameter</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>120.0<span class="nt">&lt;/line-diameter&gt;</span>
-            <span class="nt">&lt;line-length</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>0.0<span class="nt">&lt;/line-length&gt;</span>
-            <span class="nt">&lt;line-heading-deg</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>0.0<span class="nt">&lt;/line-heading-deg&gt;</span>
-            <span class="nt">&lt;line-pitch-deg</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>0.0<span class="nt">&lt;/line-pitch-deg&gt;</span>
+             <span class="nt">&lt;line-diameter</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>120.0<span class="nt">&lt;/line-diameter&gt;</span>
+             <span class="nt">&lt;line-length</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>0.0<span class="nt">&lt;/line-length&gt;</span>
+             <span class="nt">&lt;line-heading-deg</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>0.0<span class="nt">&lt;/line-heading-deg&gt;</span>
+             <span class="nt">&lt;line-pitch-deg</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>0.0<span class="nt">&lt;/line-pitch-deg&gt;</span>
 
-            <span class="c">&lt;!-- Position of the origin of the fuel line --&gt;</span>
-            <span class="nt">&lt;px</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>2.0<span class="nt">&lt;/px&gt;</span>
-            <span class="nt">&lt;py</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>-2.0<span class="nt">&lt;/py&gt;</span>
-            <span class="nt">&lt;pz</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>-1.7<span class="nt">&lt;/pz&gt;</span>
-        <span class="nt">&lt;/fuel-truck&gt;</span>
-    <span class="nt">&lt;/model&gt;</span>
-<span class="nt">&lt;/sim&gt;</span>
+             <span class="c">&lt;!-- Position of the origin of the fuel line --&gt;</span>
+             <span class="nt">&lt;px</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>2.0<span class="nt">&lt;/px&gt;</span>
+             <span class="nt">&lt;py</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>-2.0<span class="nt">&lt;/py&gt;</span>
+             <span class="nt">&lt;pz</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>-1.7<span class="nt">&lt;/pz&gt;</span>
+         <span class="nt">&lt;/fuel-truck&gt;</span>
+     <span class="nt">&lt;/model&gt;</span>
+ <span class="nt">&lt;/sim&gt;</span>
 
-<span class="nt">&lt;systems&gt;</span>
-    <span class="nt">&lt;refuel-ground&gt;</span>
-        <span class="nt">&lt;level-gal_us</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>3200.0<span class="nt">&lt;/level-gal_us&gt;</span>
+ <span class="nt">&lt;systems&gt;</span>
+     <span class="nt">&lt;refuel-ground&gt;</span>
+         <span class="nt">&lt;level-gal_us</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>3200.0<span class="nt">&lt;/level-gal_us&gt;</span>
 
-        <span class="nt">&lt;x-m</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>-15.0<span class="nt">&lt;/x-m&gt;</span>
-        <span class="nt">&lt;y-m</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>-8.0<span class="nt">&lt;/y-m&gt;</span>
-        <span class="nt">&lt;yaw-deg</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>90.0<span class="nt">&lt;/yaw-deg&gt;</span>
-    <span class="nt">&lt;/refuel-ground&gt;</span>
-<span class="nt">&lt;/systems&gt;</span>
+         <span class="nt">&lt;x-m</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>-15.0<span class="nt">&lt;/x-m&gt;</span>
+         <span class="nt">&lt;y-m</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>-8.0<span class="nt">&lt;/y-m&gt;</span>
+         <span class="nt">&lt;yaw-deg</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>90.0<span class="nt">&lt;/yaw-deg&gt;</span>
+     <span class="nt">&lt;/refuel-ground&gt;</span>
+ <span class="nt">&lt;/systems&gt;</span>
 </pre></div>
-</div>
-<p>The properties in <tt class="docutils literal"><span class="pre">/sim/model/fuel-truck/</span></tt> are used initially until
+</td></tr></table></div>
+<p>The properties in <code class="docutils literal"><span class="pre">/sim/model/fuel-truck/</span></code> are used initially until
 they get overwritten by values calculated using the properties in
-<tt class="docutils literal"><span class="pre">/systems/refuel-ground/</span></tt>. The same values must be used in order to
+<code class="docutils literal"><span class="pre">/systems/refuel-ground/</span></code>. The same values must be used in order to
 avoid teleportation of the 3D model in the first second of it being visible.</p>
+</div>
+<div class="section" id="adding-sounds">
+<h2>3.3.3. Adding sounds<a class="headerlink" href="#adding-sounds" title="Permalink to this headline">¶</a></h2>
+<p>The expansion pack provides a <code class="docutils literal"><span class="pre">pushback.wav</span></code> and a <code class="docutils literal"><span class="pre">&lt;filter&gt;</span></code> for
+helping to control the volume of the fuel truck. First, import the
+<code class="docutils literal"><span class="pre">&lt;filter&gt;</span></code> to your <code class="docutils literal"><span class="pre">-set.xml</span></code> file:</p>
+<blockquote>
+<div><div class="highlight-xml"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre> <span class="nt">&lt;autopilot&gt;</span>
+     <span class="nt">&lt;path&gt;</span>Aircraft/ExpansionPack/Systems/fuel-truck.xml<span class="nt">&lt;/path&gt;</span>
+ <span class="nt">&lt;/autopilot&gt;</span>
+</pre></div>
+</td></tr></table></div>
+</div></blockquote>
+<p>Then create a file called <code class="docutils literal"><span class="pre">Systems/sound-fuel-truck.xml</span></code> and add it to
+your aircraft. In this file you need to add a gain <code class="docutils literal"><span class="pre">&lt;filter&gt;</span></code> that uses
+the <code class="docutils literal"><span class="pre">/sim/model/fuel-truck/state</span></code> property as the gain and outputs the
+volume to another property, for example <code class="docutils literal"><span class="pre">/sim/model/fuel-truck/volume</span></code>.
+This is what the Osprey uses:</p>
+<blockquote>
+<div><div class="highlight-xml"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29</pre></div></td><td class="code"><div class="highlight"><pre> <span class="nt">&lt;filter&gt;</span>
+     <span class="nt">&lt;update-interval-secs</span> <span class="na">type=</span><span class="s">&quot;double&quot;</span><span class="nt">&gt;</span>0.1<span class="nt">&lt;/update-interval-secs&gt;</span>
+     <span class="nt">&lt;type&gt;</span>gain<span class="nt">&lt;/type&gt;</span>
+     <span class="nt">&lt;gain&gt;</span>
+         <span class="nt">&lt;property&gt;</span>/sim/model/fuel-truck/state<span class="nt">&lt;/property&gt;</span>
+     <span class="nt">&lt;/gain&gt;</span>
+     <span class="nt">&lt;input&gt;</span>
+         <span class="nt">&lt;condition&gt;</span>
+             <span class="nt">&lt;property&gt;</span>/sim/current-view/internal<span class="nt">&lt;/property&gt;</span>
+         <span class="nt">&lt;/condition&gt;</span>
+         <span class="nt">&lt;value&gt;</span>0.2<span class="nt">&lt;/value&gt;</span>
+         <span class="nt">&lt;offset&gt;</span>
+             <span class="nt">&lt;expression&gt;</span>
+                 <span class="nt">&lt;product&gt;</span>
+                     <span class="c">&lt;!-- Boost the volume if both cockpit and starboard doors are open --&gt;</span>
+                     <span class="nt">&lt;property&gt;</span>/instrumentation/doors/cockpitdoor/position-norm<span class="nt">&lt;/property&gt;</span>
+                     <span class="nt">&lt;property&gt;</span>/instrumentation/doors/crewup/position-norm<span class="nt">&lt;/property&gt;</span>
+                     <span class="nt">&lt;value&gt;</span>0.4<span class="nt">&lt;/value&gt;</span>
+                 <span class="nt">&lt;/product&gt;</span>
+             <span class="nt">&lt;/expression&gt;</span>
+         <span class="nt">&lt;/offset&gt;</span>
+     <span class="nt">&lt;/input&gt;</span>
+     <span class="nt">&lt;input&gt;</span>
+         <span class="nt">&lt;value&gt;</span>1.0<span class="nt">&lt;/value&gt;</span>
+     <span class="nt">&lt;/input&gt;</span>
+     <span class="nt">&lt;output&gt;</span>
+         <span class="nt">&lt;property&gt;</span>/sim/model/fuel-truck/volume<span class="nt">&lt;/property&gt;</span>
+     <span class="nt">&lt;/output&gt;</span>
+ <span class="nt">&lt;/filter&gt;</span>
+</pre></div>
+</td></tr></table></div>
+</div></blockquote>
+<p>Add the <code class="docutils literal"><span class="pre">sound-fuel-truck.xml</span></code> file to your <code class="docutils literal"><span class="pre">-set.xml</span></code> file:</p>
+<blockquote>
+<div><div class="highlight-xml"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre> <span class="nt">&lt;autopilot&gt;</span>
+     <span class="nt">&lt;path&gt;</span>Systems/sound-fuel-truck.xml<span class="nt">&lt;/path&gt;</span>
+ <span class="nt">&lt;/autopilot&gt;</span>
+</pre></div>
+</td></tr></table></div>
+</div></blockquote>
+<p>Finally, you need to use the <code class="docutils literal"><span class="pre">/sim/model/fuel-truck/volume</span></code> property to
+control the volume of the <code class="docutils literal"><span class="pre">pushback.wav</span></code> file. Add the following to your
+aircraft&#8217;s sound XML file. For example:</p>
+<blockquote>
+<div><div class="highlight-xml"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20</pre></div></td><td class="code"><div class="highlight"><pre> <span class="nt">&lt;fuel-truck&gt;</span>
+     <span class="nt">&lt;name&gt;</span>fuel-truck-outside<span class="nt">&lt;/name&gt;</span>
+     <span class="nt">&lt;mode&gt;</span>looped<span class="nt">&lt;/mode&gt;</span>
+     <span class="nt">&lt;path&gt;</span>Aircraft/ExpansionPack/Sounds/pushback.wav<span class="nt">&lt;/path&gt;</span>
+     <span class="nt">&lt;condition&gt;</span>
+         <span class="nt">&lt;property&gt;</span>/sim/model/fuel-truck/enabled<span class="nt">&lt;/property&gt;</span>
+     <span class="nt">&lt;/condition&gt;</span>
+     <span class="nt">&lt;volume&gt;</span>
+         <span class="nt">&lt;property&gt;</span>/sim/model/fuel-truck/volume<span class="nt">&lt;/property&gt;</span>
+         <span class="nt">&lt;factor&gt;</span>1.0<span class="nt">&lt;/factor&gt;</span>
+         <span class="nt">&lt;offset&gt;</span>0.0<span class="nt">&lt;/offset&gt;</span>
+         <span class="nt">&lt;min&gt;</span>0.1<span class="nt">&lt;/min&gt;</span>
+         <span class="nt">&lt;max&gt;</span>7.0<span class="nt">&lt;/max&gt;</span>
+     <span class="nt">&lt;/volume&gt;</span>
+     <span class="nt">&lt;pitch&gt;</span>
+         <span class="nt">&lt;property&gt;</span>/sim/model/fuel-truck/state<span class="nt">&lt;/property&gt;</span>
+         <span class="nt">&lt;factor&gt;</span>0.3<span class="nt">&lt;/factor&gt;</span>
+         <span class="nt">&lt;offset&gt;</span>1.1<span class="nt">&lt;/offset&gt;</span>
+     <span class="nt">&lt;/pitch&gt;</span>
+ <span class="nt">&lt;/fuel-truck&gt;</span>
+</pre></div>
+</td></tr></table></div>
+</div></blockquote>
 </div>
 <div class="section" id="properties">
 <h2>3.3.4. Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
 <p>The Fuel Truck dialog depends on several properties in
-<tt class="docutils literal"><span class="pre">/systems/refuel-ground/</span></tt> and <tt class="docutils literal"><span class="pre">/sim/model/fuel-truck/</span></tt>. It is recommended
-to use the dialog in conjunction with a <tt class="docutils literal"><span class="pre">GroundRefuelProducer</span></tt> component
-from the <cite>fuel</cite> module.</p>
+<code class="docutils literal"><span class="pre">/systems/refuel-ground/</span></code> and <code class="docutils literal"><span class="pre">/sim/model/fuel-truck/</span></code>. It is recommended
+to use the dialog in conjunction with a <code class="docutils literal"><span class="pre">GroundRefuelProducer</span></code> component
+from the <a class="reference internal" href="module-fuel.html#module-fuel"><span>fuel</span></a> module.</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">/systems/refuel-ground/level-gal_us</span></tt> is the current amount of gallons
+<li><code class="docutils literal"><span class="pre">/systems/refuel-ground/level-gal_us</span></code> is the current amount of gallons
 in the fuel truck.</li>
-<li><tt class="docutils literal"><span class="pre">/systems/refuel-ground/refuel</span></tt> is true if the fuel system should
+<li><code class="docutils literal"><span class="pre">/systems/refuel-ground/refuel</span></code> is true if the fuel system should
 extract fuel out of the fuel truck.</li>
-<li><tt class="docutils literal"><span class="pre">/systems/fuel/producer-ground-refuel-fuel-truck/current-flow-gal_us-ps</span></tt>
+<li><code class="docutils literal"><span class="pre">/systems/fuel/producer-ground-refuel-fuel-truck/current-flow-gal_us-ps</span></code>
 indicates the fuel flow in gallons per second. A value greater than zero
 indicates the aircraft is actually being refueled. This is shown in the
 3D model of the fuel truck by the orange light on top of the fuel truck.</li>
@@ -328,10 +475,10 @@ indicates the aircraft is actually being refueled. This is shown in the
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="module-logger.html" class="btn btn-neutral float-right" title="3.4. logger"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="module-logger.html" class="btn btn-neutral float-right" title="3.4. logger" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="module-fuel-sequencer.html" class="btn btn-neutral" title="3.2. fuel_sequencer"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="module-fuel-sequencer.html" class="btn btn-neutral" title="3.2. fuel_sequencer" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -343,9 +490,10 @@ indicates the aircraft is actually being refueled. This is shown in the
         &copy; Copyright 2015, onox.
     </p>
   </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 
-  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
 </footer>
+
         </div>
       </div>
 

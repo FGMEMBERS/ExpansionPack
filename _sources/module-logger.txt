@@ -46,7 +46,7 @@ And:
 
    logger.error("This is an error");
 
-will print the following text in bold red: 
+will print the following text in bold red:
 
 .. code-block:: sh
 

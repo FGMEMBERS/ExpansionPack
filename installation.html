@@ -5,6 +5,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>1. Installation &mdash; FlightGear Expansion Pack 1.0 documentation</title>
@@ -14,7 +15,6 @@
   
 
   
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   
   
@@ -28,11 +28,14 @@
   
 
   
+
+  
     <link rel="top" title="FlightGear Expansion Pack 1.0 documentation" href="index.html"/>
+        <link rel="next" title="2. Usage" href="usage.html"/>
         <link rel="prev" title="FlightGear Expansion Pack documentation" href="index.html"/> 
 
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
@@ -43,28 +46,75 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="index.html" class="fa fa-home"> FlightGear Expansion Pack</a>
-        <div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> FlightGear Expansion Pack
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+        
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
-        
-            <ul class="current">
+          
+          
+              <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="">1. Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#dependencies">1.1. Dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-from-master-zip">1.2. Installing from master.zip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-from-the-git-repository">1.3. Installing from the Git repository</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">2. Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#importing-a-module">2.1. Importing a module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#checking-the-version-of-a-module">2.2. Checking the version of a module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">3. Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module-fuel.html">3.1. fuel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="module-fuel.html#components">3.1.1. Components</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="module-fuel.html#transferablefuelcomponent">3.1.1.1. TransferableFuelComponent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="module-fuel.html#serviceablefuelcomponentmixin">3.1.1.2. ServiceableFuelComponentMixin</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="module-fuel.html#network">3.1.2. Network</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="module-fuel-sequencer.html">3.2. fuel_sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module-fuel-truck-dialog.html">3.3. fuel_truck_dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="module-fuel-truck-dialog.html#adding-the-3d-model-and-dialog">3.3.1. Adding the 3D model and dialog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="module-fuel-truck-dialog.html#initial-position">3.3.2. Initial position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="module-fuel-truck-dialog.html#adding-sounds">3.3.3. Adding sounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="module-fuel-truck-dialog.html#properties">3.3.4. Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="module-logger.html">3.4. logger</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="module-logger.html#printing-text-to-the-terminal">3.4.1. Printing text to the terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="module-logger.html#showing-colored-messages-on-the-screen">3.4.2. Showing colored messages on the screen</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="module-math-ext.html">3.5. math_ext</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module-refueling-boom.html">3.6. refueling_boom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module-raas.html">3.7. raas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module-updateloop.html">3.8. updateloop</a></li>
+</ul>
+</li>
 </ul>
 
+          
         
       </div>
       &nbsp;
@@ -89,13 +139,15 @@
     <li>1. Installation</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/installation.txt" rel="nofollow"> View page source</a>
+          
+            <a href="_sources/installation.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
   </ul>
   <hr/>
 </div>
-          <div role="main">
+          <div role="main" class="document">
             
   <div class="section" id="installation">
 <h1>1. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
@@ -112,12 +164,12 @@ file or by cloning the Git repository.</p>
 <div class="section" id="installing-from-master-zip">
 <h2>1.2. Installing from master.zip<a class="headerlink" href="#installing-from-master-zip" title="Permalink to this headline">¶</a></h2>
 <p>To download the .zip file, download <a class="reference external" href="https://github.com/onox/fg-expansion-pack/archive/master.zip">master.zip</a> and then rename the
-folder <tt class="docutils literal"><span class="pre">fg-expansion-pack-master</span></tt> to <tt class="docutils literal"><span class="pre">ExpansionPack</span></tt>. Then copy the
-folder to FlightGear&#8217;s <tt class="docutils literal"><span class="pre">Aircraft</span></tt> folder.</p>
+folder <code class="docutils literal"><span class="pre">fg-expansion-pack-master</span></code> to <code class="docutils literal"><span class="pre">ExpansionPack</span></code>. Then copy the
+folder to FlightGear&#8217;s <code class="docutils literal"><span class="pre">Aircraft</span></code> folder.</p>
 </div>
 <div class="section" id="installing-from-the-git-repository">
 <h2>1.3. Installing from the Git repository<a class="headerlink" href="#installing-from-the-git-repository" title="Permalink to this headline">¶</a></h2>
-<p>Alternatively, you can clone the <tt class="docutils literal"><span class="pre">master</span></tt> branch of the Git repository.
+<p>Alternatively, you can clone the <code class="docutils literal"><span class="pre">master</span></code> branch of the Git repository.
 The repository can be found on Github at <a class="reference external" href="https://github.com/onox/fg-expansion-pack">onox/fg-expansion-pack</a> and can
 be cloned with:</p>
 <div class="highlight-sh"><div class="highlight"><pre><span class="nv">$ </span>git clone https://github.com/onox/fg-expansion-pack.git ExpansionPack
@@ -132,8 +184,10 @@ be cloned with:</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="usage.html" class="btn btn-neutral float-right" title="2. Usage" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="index.html" class="btn btn-neutral" title="FlightGear Expansion Pack documentation"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="index.html" class="btn btn-neutral" title="FlightGear Expansion Pack documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -145,9 +199,10 @@ be cloned with:</p>
         &copy; Copyright 2015, onox.
     </p>
   </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 
-  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
 </footer>
+
         </div>
       </div>
 

@@ -5,6 +5,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>3.1. fuel &mdash; FlightGear Expansion Pack 1.0 documentation</title>
@@ -14,7 +15,6 @@
   
 
   
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   
   
@@ -28,13 +28,15 @@
   
 
   
+
+  
     <link rel="top" title="FlightGear Expansion Pack 1.0 documentation" href="index.html"/>
         <link rel="up" title="3. Modules" href="modules.html"/>
         <link rel="next" title="3.2. fuel_sequencer" href="module-fuel-sequencer.html"/>
         <link rel="prev" title="3. Modules" href="modules.html"/> 
 
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
@@ -45,20 +47,32 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="index.html" class="fa fa-home"> FlightGear Expansion Pack</a>
-        <div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> FlightGear Expansion Pack
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+        
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
-        
-            <ul class="current">
+          
+          
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">1. Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#dependencies">1.1. Dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-from-master-zip">1.2. Installing from master.zip</a></li>
@@ -71,10 +85,28 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">3. Modules</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="">3.1. fuel</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">3.1. fuel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#components">3.1.1. Components</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transferablefuelcomponent">3.1.1.1. TransferableFuelComponent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#serviceablefuelcomponentmixin">3.1.1.2. ServiceableFuelComponentMixin</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#network">3.1.2. Network</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="module-fuel-sequencer.html">3.2. fuel_sequencer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module-fuel-truck-dialog.html">3.3. fuel_truck_dialog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module-logger.html">3.4. logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module-fuel-truck-dialog.html">3.3. fuel_truck_dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="module-fuel-truck-dialog.html#adding-the-3d-model-and-dialog">3.3.1. Adding the 3D model and dialog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="module-fuel-truck-dialog.html#initial-position">3.3.2. Initial position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="module-fuel-truck-dialog.html#adding-sounds">3.3.3. Adding sounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="module-fuel-truck-dialog.html#properties">3.3.4. Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="module-logger.html">3.4. logger</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="module-logger.html#printing-text-to-the-terminal">3.4.1. Printing text to the terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="module-logger.html#showing-colored-messages-on-the-screen">3.4.2. Showing colored messages on the screen</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="module-math-ext.html">3.5. math_ext</a></li>
 <li class="toctree-l2"><a class="reference internal" href="module-refueling-boom.html">3.6. refueling_boom</a></li>
 <li class="toctree-l2"><a class="reference internal" href="module-raas.html">3.7. raas</a></li>
@@ -83,6 +115,7 @@
 </li>
 </ul>
 
+          
         
       </div>
       &nbsp;
@@ -109,17 +142,174 @@
     <li>3.1. fuel</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/module-fuel.txt" rel="nofollow"> View page source</a>
+          
+            <a href="_sources/module-fuel.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
   </ul>
   <hr/>
 </div>
-          <div role="main">
+          <div role="main" class="document">
             
   <div class="section" id="fuel">
-<span id="index-0"></span><h1>3.1. fuel<a class="headerlink" href="#fuel" title="Permalink to this headline">¶</a></h1>
+<span id="module-fuel"></span><span id="index-0"></span><h1>3.1. fuel<a class="headerlink" href="#fuel" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal"><span class="pre">fuel</span></code> module defines several components that you can use to create
+a fuel system. By creating instances of the components and connecting them,
+you can build a graph. However, you must make sure that the graph contains
+no cycles. Fuel will always flow in one way through the nodes of the system,
+and if the system contains no cycles, the fuel system is essentially a
+<a class="reference external" href="https://en.wikipedia.org/wiki/Directed_acyclic_graph">directed acyclic graph</a>.</p>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">Do not create cycles in the fuel system graph by connecting components
+in the wrong order. Doing so will result in Nasal runtime errors.</p>
+</div>
+<p>All components are visible in the property tree under <code class="docutils literal"><span class="pre">/systems/fuel</span></code>.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">Set <code class="docutils literal"><span class="pre">/systems/fuel/debug</span></code> to true in order to see which pumps are
+pumping fuel and how much.</p>
+</div>
+<p><strong>Current fuel flow rate</strong></p>
+<p>Each component has a <code class="docutils literal"><span class="pre">current-flow-gal_us-ps</span></code> property which denotes
+the flow in US gallons per second flowing through the component. To keep
+this property up-to-date, the component must be added to a certain data
+structure. How this is done is explained later.</p>
+<p><strong>Failable components</strong></p>
+<p>Components which ought to have ingoing <em>and</em> outgoing connections have two
+additional properties which control the normalized flow rate. One of these
+properties is only written to by the fuel system, the other is only read
+from. An <a class="reference external" href="http://wiki.flightgear.org/Autopilot_configuration_reference">XML property rule</a> should be used to connect these two properties.
+The idea is that you can use the <a class="reference external" href="http://wiki.flightgear.org/A_Failure_Management_Framework_for_FlightGear">FailureMgr</a> to control the actual normalized
+flow rate.</p>
+<p><strong>Serviceable components</strong></p>
+<p>Some components like the <code class="docutils literal"><span class="pre">BoostPump</span></code> and the <code class="docutils literal"><span class="pre">Valve</span></code> are serviceable.
+This means that you can directly control whether they are enabled or disabled.
+You can also let a pilot control whether a serviceable component is <em>selected</em>.
+For example, you can let the pilot decide whether a component is selected, but
+use automatic logic to make the component serviceable or not. If and only
+if a component is serviceable <em>and</em> selected, it is enabled. Otherwise the
+component will be disabled. This is useful for boost pumps, which you may
+want to control automatically if they are selected by the pilot.</p>
+<p><strong>Persistant tank levels</strong></p>
+<p>The <code class="docutils literal"><span class="pre">fuel</span></code> module provides a function that you can call to make the tank
+levels persistant. This means that if the user properly shuts down FlightGear,
+then the current tank levels will be saved, and the next session will start
+with the same tank levels.</p>
+<p>To make the tank levels persistant, call the following function after
+having constructed the fuel system:</p>
+<blockquote>
+<div><div class="highlight-javascript"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre> <span class="nx">fuel</span><span class="p">.</span><span class="nx">make_tank_levels_persistent</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+</div></blockquote>
+<div class="section" id="components">
+<h2>3.1.1. Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h2>
+<p>All fuel components are a subclass of the <code class="docutils literal"><span class="pre">FuelComponent</span></code> class. The
+hierarchy is as follows:</p>
+<ul>
+<li><p class="first"><code class="docutils literal"><span class="pre">FuelComponent</span></code></p>
+<blockquote>
+<div><ul>
+<li><p class="first"><code class="docutils literal"><span class="pre">TransferableFuelComponent</span></code></p>
+<blockquote>
+<div><ul>
+<li><p class="first"><code class="docutils literal"><span class="pre">ActiveFuelComponent</span></code></p>
+<blockquote>
+<div><ul>
+<li><p class="first"><code class="docutils literal"><span class="pre">AbstractPump</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">BoostPump</span></code> (implements <code class="docutils literal"><span class="pre">ServiceableFuelComponentMixin</span></code>)</li>
+<li><code class="docutils literal"><span class="pre">AutoPump</span></code></li>
+<li><code class="docutils literal"><span class="pre">GravityPump</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">Valve</span></code> (implements <code class="docutils literal"><span class="pre">ServiceableFuelComponentMixin</span></code>)</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">Tube</span></code></p>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">Tank</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">LeakableTank</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">Manifold</span></code></p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">AbstractConsumer</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">EngineConsumer</span></code></li>
+<li><code class="docutils literal"><span class="pre">JettisonConsumer</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">AbstractProducer</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">AirRefuelProducer</span></code></li>
+<li><code class="docutils literal"><span class="pre">GroundRefuelProducer</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<div class="section" id="transferablefuelcomponent">
+<h3>3.1.1.1. TransferableFuelComponent<a class="headerlink" href="#transferablefuelcomponent" title="Permalink to this headline">¶</a></h3>
+<p>Components that are a subclass of the <code class="docutils literal"><span class="pre">TransferableFuelComponent</span></code> class
+will have ingoing <em>and</em> outgoing connections and have two additional
+properties that determine the actual flow rate through the component.</p>
+<ol class="arabic simple">
+<li><code class="docutils literal"><span class="pre">requested-flow-factor</span></code></li>
+<li><code class="docutils literal"><span class="pre">actual-flow-factor</span></code></li>
+</ol>
+<p>The fuel sytem will write to the first property the normalized flow rate
+that it requests and reads the actual normalized flow rate from the second
+property. The fuel system will only work if the aircraft has defined an
+<a class="reference external" href="http://wiki.flightgear.org/Autopilot_configuration_reference">XML property rule</a> to connect these two properties. This way you can use
+<a class="reference external" href="http://wiki.flightgear.org/A_Failure_Management_Framework_for_FlightGear">FailureMgr</a> to control the <code class="docutils literal"><span class="pre">actual-flow-factor</span></code> property.</p>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p>Without an XML property rule, no fuel will actually flow through an
+instance of a <code class="docutils literal"><span class="pre">TransferableFuelComponent</span></code>. Even if you do not plan to
+use the <code class="docutils literal"><span class="pre">FailureMgr</span></code>, you must add an XML property rule.</p>
+<p class="last">Pumps, tubes, and valves all require an XML property rule. For valves
+and pumps it is recommended to use a <a class="reference external" href="http://wiki.flightgear.org/Autopilot_configuration_reference#Rate_limit_filter_.3Cnoise-spike.3E">noise-spike</a> filter.</p>
+</div>
+</div>
+<div class="section" id="serviceablefuelcomponentmixin">
+<h3>3.1.1.2. ServiceableFuelComponentMixin<a class="headerlink" href="#serviceablefuelcomponentmixin" title="Permalink to this headline">¶</a></h3>
+<p>Components that implement the <code class="docutils literal"><span class="pre">ServiceableFuelComponentMixin</span></code> mixin provide
+two properties that can be used to enable or disable the component:</p>
+<ol class="arabic simple">
+<li><code class="docutils literal"><span class="pre">serviceable</span></code></li>
+<li><code class="docutils literal"><span class="pre">selected</span></code></li>
+</ol>
+<p>The first property is false and the second property is true by default. If both
+properties are true then the component will be enabled, otherwise it will be
+disabled.</p>
+<p>If you want a pilot to directly control a component, you should allow the
+pilot to toggle the <code class="docutils literal"><span class="pre">serviceable</span></code> property; via a switch in the cockpit,
+for example. For components that are controlled by some automatic logic,
+you should use the <code class="docutils literal"><span class="pre">selected</span></code> property instead.</p>
+</div>
+</div>
+<div class="section" id="network">
+<h2>3.1.2. Network<a class="headerlink" href="#network" title="Permalink to this headline">¶</a></h2>
 <p>TODO</p>
+</div>
 </div>
 
 
@@ -128,10 +318,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="module-fuel-sequencer.html" class="btn btn-neutral float-right" title="3.2. fuel_sequencer"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="module-fuel-sequencer.html" class="btn btn-neutral float-right" title="3.2. fuel_sequencer" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="modules.html" class="btn btn-neutral" title="3. Modules"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral" title="3. Modules" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -143,9 +333,10 @@
         &copy; Copyright 2015, onox.
     </p>
   </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 
-  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
 </footer>
+
         </div>
       </div>
 

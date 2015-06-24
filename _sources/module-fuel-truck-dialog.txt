@@ -1,4 +1,5 @@
 .. index:: single: fuel_truck_dialog
+.. _module-fuel_truck_dialog:
 
 fuel_truck_dialog
 =================
@@ -15,6 +16,7 @@ Adding the 3D model and dialog
 Import the fuel_truck_model by adding the following to a .nas file:
 
     .. code-block:: javascript
+       :linenos:
 
         io.include("Aircraft/ExpansionPack/Nasal/init.nas");
 
@@ -23,6 +25,7 @@ Import the fuel_truck_model by adding the following to a .nas file:
 Add an ``<item>`` to your aircraft's ``<menu>``:
 
     .. code-block:: xml
+       :linenos:
 
         <item>
             <label>-- Ground Services --</label>
@@ -40,6 +43,7 @@ Add an ``<item>`` to your aircraft's ``<menu>``:
 Add the fuel truck 3D model to your aircraft's model XML file:
 
     .. code-block:: xml
+       :linenos:
 
         <model>
             <name>fuel-truck</name>
@@ -59,98 +63,13 @@ Add the fuel truck 3D model to your aircraft's model XML file:
             <path>Aircraft/ExpansionPack/Models/Airport/Fuel-Truck/fuel-line.xml</path>
         </model>
 
-Adding sounds
--------------
-
-The expansion pack provides a ``pushback.wav`` and a ``<filter>`` for
-helping to control the volume of the fuel truck. First, import the
-``<filter>`` to your ``-set.xml`` file:
-
-    .. code-block:: xml
-
-        <autopilot>
-            <path>Aircraft/ExpansionPack/Systems/fuel-truck.xml</path>
-        </autopilot>
-
-Then create a file called ``Systems/sound-fuel-truck.xml`` and add it to
-your aircraft. In this file you need to add a gain ``<filter>`` that uses
-the ``/sim/model/fuel-truck/state`` property as the gain and outputs the
-volume to another property, for example ``/sim/model/fuel-truck/volume``.
-This is what the Osprey uses:
-
-    .. code-block:: xml
-
-        <filter>
-            <update-interval-secs type="double">0.1</update-interval-secs>
-            <type>gain</type>
-            <gain>
-                <property>/sim/model/fuel-truck/state</property>
-            </gain>
-            <input>
-                <condition>
-                    <property>/sim/current-view/internal</property>
-                </condition>
-                <value>0.2</value>
-                <offset>
-                    <expression>
-                        <product>
-                            <!-- Boost the volume if both cockpit and starboard doors are open -->
-                            <property>/instrumentation/doors/cockpitdoor/position-norm</property>
-                            <property>/instrumentation/doors/crewup/position-norm</property>
-                            <value>0.4</value>
-                        </product>
-                    </expression>
-                </offset>
-            </input>
-            <input>
-                <value>1.0</value>
-            </input>
-            <output>
-                <property>/sim/model/fuel-truck/volume</property>
-            </output>
-        </filter>
-
-Add the ``sound-fuel-truck.xml`` file to your ``-set.xml`` file:
-
-    .. code-block:: xml
-
-        <autopilot>
-            <path>Systems/sound-fuel-truck.xml</path>
-        </autopilot>
-
-Finally, you need to use the ``/sim/model/fuel-truck/volume`` property to
-control the volume of the ``pushback.wav`` file. Add the following to your
-aircraft's sound XML file. For example:
-
-    .. code-block:: xml
-
-        <fuel-truck>
-            <name>fuel-truck-outside</name>
-            <mode>looped</mode>
-            <path>Aircraft/ExpansionPack/Sounds/pushback.wav</path>
-            <condition>
-                <property>/sim/model/fuel-truck/enabled</property>
-            </condition>
-            <volume>
-                <property>/sim/model/fuel-truck/volume</property>
-                <factor>1.0</factor>
-                <offset>0.0</offset>
-                <min>0.1</min>
-                <max>7.0</max>
-            </volume>
-            <pitch>
-                <property>/sim/model/fuel-truck/state</property>
-                <factor>0.3</factor>
-                <offset>1.1</offset>
-            </pitch>
-        </fuel-truck>
-
-Initial Position
+Initial position
 ----------------
 
 The initial position of the fuel truck can be set in the aircraft's ``-set.xml`` file:
 
 .. code-block:: xml
+   :linenos:
 
     <sim>
         <model>
@@ -191,13 +110,103 @@ they get overwritten by values calculated using the properties in
 ``/systems/refuel-ground/``. The same values must be used in order to
 avoid teleportation of the 3D model in the first second of it being visible.
 
+Adding sounds
+-------------
+
+The expansion pack provides a ``pushback.wav`` and a ``<filter>`` for
+helping to control the volume of the fuel truck. First, import the
+``<filter>`` to your ``-set.xml`` file:
+
+    .. code-block:: xml
+       :linenos:
+
+        <autopilot>
+            <path>Aircraft/ExpansionPack/Systems/fuel-truck.xml</path>
+        </autopilot>
+
+Then create a file called ``Systems/sound-fuel-truck.xml`` and add it to
+your aircraft. In this file you need to add a gain ``<filter>`` that uses
+the ``/sim/model/fuel-truck/state`` property as the gain and outputs the
+volume to another property, for example ``/sim/model/fuel-truck/volume``.
+This is what the Osprey uses:
+
+    .. code-block:: xml
+       :linenos:
+
+        <filter>
+            <update-interval-secs type="double">0.1</update-interval-secs>
+            <type>gain</type>
+            <gain>
+                <property>/sim/model/fuel-truck/state</property>
+            </gain>
+            <input>
+                <condition>
+                    <property>/sim/current-view/internal</property>
+                </condition>
+                <value>0.2</value>
+                <offset>
+                    <expression>
+                        <product>
+                            <!-- Boost the volume if both cockpit and starboard doors are open -->
+                            <property>/instrumentation/doors/cockpitdoor/position-norm</property>
+                            <property>/instrumentation/doors/crewup/position-norm</property>
+                            <value>0.4</value>
+                        </product>
+                    </expression>
+                </offset>
+            </input>
+            <input>
+                <value>1.0</value>
+            </input>
+            <output>
+                <property>/sim/model/fuel-truck/volume</property>
+            </output>
+        </filter>
+
+Add the ``sound-fuel-truck.xml`` file to your ``-set.xml`` file:
+
+    .. code-block:: xml
+       :linenos:
+
+        <autopilot>
+            <path>Systems/sound-fuel-truck.xml</path>
+        </autopilot>
+
+Finally, you need to use the ``/sim/model/fuel-truck/volume`` property to
+control the volume of the ``pushback.wav`` file. Add the following to your
+aircraft's sound XML file. For example:
+
+    .. code-block:: xml
+       :linenos:
+
+        <fuel-truck>
+            <name>fuel-truck-outside</name>
+            <mode>looped</mode>
+            <path>Aircraft/ExpansionPack/Sounds/pushback.wav</path>
+            <condition>
+                <property>/sim/model/fuel-truck/enabled</property>
+            </condition>
+            <volume>
+                <property>/sim/model/fuel-truck/volume</property>
+                <factor>1.0</factor>
+                <offset>0.0</offset>
+                <min>0.1</min>
+                <max>7.0</max>
+            </volume>
+            <pitch>
+                <property>/sim/model/fuel-truck/state</property>
+                <factor>0.3</factor>
+                <offset>1.1</offset>
+            </pitch>
+        </fuel-truck>
+
 Properties
 ----------
 
 The Fuel Truck dialog depends on several properties in
 ``/systems/refuel-ground/`` and ``/sim/model/fuel-truck/``. It is recommended
 to use the dialog in conjunction with a ``GroundRefuelProducer`` component
-from the `fuel` module.
+from the :ref:`module-fuel` module.
 
 * ``/systems/refuel-ground/level-gal_us`` is the current amount of gallons
   in the fuel truck.
