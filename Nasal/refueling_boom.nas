@@ -19,9 +19,15 @@ with("math_ext");
 with("updateloop");
 
 var version = {
-    major: 3,
+    major: 4,
     minor: 0
 };
+
+# Period of displaying message containing the distance to the closest callsign
+var callsign_distance_update_period = 2.0;
+
+# Extra margin to prevent bouncing between contact and lost-contact states
+var track_margin_m = 2.0;
 
 var RefuelingBoomTrackingUpdater = {
 
@@ -46,9 +52,21 @@ var RefuelingBoomTrackingUpdater = {
         me.set_receiver(nil);
     },
 
-    set_receiver: func (position) {
+    set_receiver: func (position, callsign=nil) {
+        var had_contact = getprop("/sim/multiplay/generic/int[12]");
+        var contact = position != nil;
+
         me.receiver = position;
-        setprop("/sim/multiplay/generic/int[12]", position != nil);
+        setprop("/sim/multiplay/generic/int[12]", contact);
+        setprop("/sim/multiplay/generic/string[19]", contact ? callsign : "");
+
+        if (!had_contact and contact) {
+            setprop("/sim/multiplay/chat", "Contact!");
+            setprop("/refueling/closest/callsign", "");
+        }
+        if (had_contact and !contact) {
+            setprop("/sim/multiplay/chat", "Lost contact!");
+        }
     },
 
     update: func (dt) {
@@ -64,42 +82,15 @@ var RefuelingBoomTrackingUpdater = {
         var pitch_deg = getprop("/orientation/pitch-deg");
         var heading   = getprop("/orientation/heading-deg");
 
+        # Compute the actual position of the origin of the boom
         var (boom_origin_2d, boom_origin) = math_ext.get_point(origin_x, origin_y, origin_z, roll_deg, pitch_deg, heading);
 
-        var receiver_alt = me.receiver.alt();
-        me.receiver.set_alt(boom_origin_2d.alt());
+        var (yaw, pitch, distance) = math_ext.get_yaw_pitch_distance_inert(boom_origin_2d, boom_origin, me.receiver, heading);
+        (yaw, pitch) = math_ext.get_yaw_pitch_body(roll_deg, pitch_deg, yaw, pitch);
 
-        # Calculate heading of refueling boom in the inertial frame
-        var line_heading_deg = boom_origin_2d.course_to(me.receiver) - heading;
-        var line_distance_2d = boom_origin_2d.direct_distance_to(me.receiver);
-
-        me.receiver.set_alt(receiver_alt);
-
-        # Calculate pitch and length of refueling boom in the inertial frame
-        var line_distance  = boom_origin.direct_distance_to(me.receiver);
-        var line_pitch_deg = math_ext.atan(boom_origin.alt() - me.receiver.alt(), line_distance_2d);
-
-        ######################################################################
-
-        var z = -line_distance * math_ext.sin(line_pitch_deg);
-        var a =  line_distance * math_ext.cos(line_pitch_deg);
-
-        var x = -a * math_ext.cos(line_heading_deg);
-        var y =  a * math_ext.sin(line_heading_deg);
-
-        # Convert the position in the inertial frame to the body frame
-        (x, y, z) = math_ext.rotate_to_body_zyx(x, y, z, -roll_deg, pitch_deg, 0.0);
-
-        var xyz_distance_2d = math.sqrt(math.pow(x, 2) + math.pow(y, 2));
-        var xyz_distance    = math.sqrt(math.pow(x, 2) + math.pow(y, 2) + math.pow(z, 2));
-
-        # Calculate heading and pitch of refueling boom in the body frame
-        var xyz_heading = -math_ext.atan(y, x);
-        var xyz_pitch = math_ext.atan(-z, xyz_distance_2d);
-
-        setprop("/refueling/boom-heading-deg", xyz_heading);
-        setprop("/refueling/boom-pitch-deg", xyz_pitch);
-        setprop("/refueling/boom-length", xyz_distance);
+        setprop("/refueling/boom-heading-deg", geo.normdeg180(yaw));
+        setprop("/refueling/boom-pitch-deg", -pitch);
+        setprop("/refueling/boom-length", distance);
     }
 
 };
@@ -113,6 +104,24 @@ var RefuelingBoomPositionUpdater = {
         };
         m.loop = updateloop.UpdateLoop.new(components: [m], update_period: 0.0, enable: 0);
         m.ai_models = props.globals.getNode("/ai/models", 1);
+        m.callsign_timer = maketimer(callsign_distance_update_period, func {
+            var distance = getprop("/refueling/closest/distance-m");
+            var callsign = getprop("/refueling/closest/callsign");
+            var message = sprintf("%s: %.1f meter", callsign, distance);
+            setprop("/sim/multiplay/chat", message);
+        });
+
+        setlistener("/refueling/closest/callsign", func (n) {
+            var waiting = n.getValue() != "";
+
+            if (waiting) {
+                m.callsign_timer.restart(callsign_distance_update_period);
+            }
+            else {
+                m.callsign_timer.stop();
+            }
+        }, 0, 0);
+
         return m;
     },
 
@@ -126,7 +135,6 @@ var RefuelingBoomPositionUpdater = {
     },
 
     reset: func {
-        setprop("/sim/multiplay/generic/string[19]", "");
         me.tracker.set_receiver(nil);
     },
 
@@ -161,18 +169,14 @@ var RefuelingBoomPositionUpdater = {
                 var fuel_point = me._get_aar_point_mp(mp_node);
 
                 var distance = end_point.direct_distance_to(fuel_point);
-                debug.dump(sprintf("(Contact) Distance to %s: %.3f", callsign, distance));
-                if (distance <= 2.0) {
-                    # Set receiver
-                    me.tracker.set_receiver(fuel_point);
+                if (distance <= getprop("/refueling/max-contact-distance-m") + track_margin_m) {
+                    me.tracker.set_receiver(fuel_point, callsign);
                 }
                 else {
-                    setprop("/sim/multiplay/generic/string[19]", "");
                     me.tracker.set_receiver(nil);
                 }
             }
             else {
-                setprop("/sim/multiplay/generic/string[19]", "");
                 me.tracker.set_receiver(nil);
             }
         }
@@ -180,26 +184,35 @@ var RefuelingBoomPositionUpdater = {
             # Check for contact with MP aircraft
             var mp = me.ai_models.getChildren("multiplayer");
 
+            var closest_point = [nil, 9999.0, ""];
+
             foreach (var a; mp) {
                 if (!a.getNode("valid", 1).getValue()) {
                     continue;
                 }
 
                 var fuel_point = me._get_aar_point_mp(a);
-
                 if (fuel_point == nil) {
                     continue;
                 }
 
                 var distance = end_point.direct_distance_to(fuel_point);
-
-                var callsign = a.getNode("callsign").getValue();
-                debug.dump(sprintf("Distance to %s: %.3f", callsign, distance));
-                if (distance <= 1.0) {
-                    setprop("/sim/multiplay/generic/string[19]", callsign);
-                    # Set receiver
-                    me.tracker.set_receiver(fuel_point);
+                if (distance < closest_point[1]) {
+                    var callsign = a.getNode("callsign").getValue();
+                    closest_point = [fuel_point, distance, callsign];
                 }
+            }
+
+            if (closest_point[1] <= getprop("/refueling/max-contact-distance-m")) {
+                me.tracker.set_receiver(closest_point[0], closest_point[2]);
+            }
+            elsif (closest_point[1] <= getprop("/refueling/max-pre-contact-distance-m")) {
+                setprop("/refueling/closest/distance-m", closest_point[1]);
+                setprop("/refueling/closest/callsign", closest_point[2]);
+            }
+            else {
+                setprop("/refueling/closest/distance-m", 0.0);
+                setprop("/refueling/closest/callsign", "");
             }
         }
     },
