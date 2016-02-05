@@ -19,7 +19,7 @@ with("math_ext");
 with("updateloop");
 
 var version = {
-    major: 4,
+    major: 5,
     minor: 0
 };
 
@@ -29,6 +29,56 @@ var callsign_distance_update_period = 2.0;
 # Extra margin to prevent bouncing between contact and lost-contact states
 var track_margin_m = 2.0;
 
+var get_boom_end_point = func {
+    var line_heading_deg = getprop("/engines/engine[9]/n1");
+    var line_pitch_deg   = getprop("/engines/engine[9]/n2");
+    var line_distance    = getprop("/engines/engine[9]/rpm");
+
+    var z = -line_distance * math_ext.sin(line_pitch_deg);
+    var a =  line_distance * math_ext.cos(line_pitch_deg);
+
+    var x =  a * math_ext.cos(line_heading_deg);
+    var y = -a * math_ext.sin(line_heading_deg);
+
+    x = x + getprop("/refueling/origin-x-m");
+    y = y + getprop("/refueling/origin-y-m");
+    z = z + getprop("/refueling/origin-z-m");
+
+    var pitch_deg = getprop("/orientation/pitch-deg");
+    var roll_deg  = getprop("/orientation/roll-deg");
+    var heading_deg = getprop("/orientation/heading-deg");
+
+    # Calculate the actual end point of the refueling boom in the inertial frame
+    var (end_point_2d, end_point) = math_ext.get_point(x, y, z, roll_deg, pitch_deg, heading_deg);
+
+    return end_point;
+};
+
+var get_aar_point_mp = func (mp_node) {
+    # Get position of MP aircraft
+    var lat = mp_node.getNode("position/latitude-deg").getValue();
+    var lon = mp_node.getNode("position/longitude-deg").getValue();
+    var alt = mp_node.getNode("position/altitude-ft").getValue();
+    var mp_position = geo.Coord.new().set_latlon(lat, lon, alt * globals.FT2M);
+
+    # Get orientation of MP aircraft
+    var roll_deg = mp_node.getNode("orientation/roll-deg").getValue();
+    var pitch_deg = mp_node.getNode("orientation/pitch-deg").getValue();
+    var heading_deg = mp_node.getNode("orientation/true-heading-deg").getValue();
+
+    # Get offset of AAR point
+    var x = mp_node.getNode("refuel/offset-x-m", 0);
+    var y = mp_node.getNode("refuel/offset-y-m", 0);
+    var z = mp_node.getNode("refuel/offset-z-m", 0);
+
+    if (x == nil or y == nil or z == nil) {
+        return nil;
+    }
+
+    var (fuel_point_2d, fuel_point) = math_ext.get_point(x.getValue(), y.getValue(), z.getValue(), roll_deg, pitch_deg, heading_deg, mp_position);
+    return fuel_point;
+};
+
 var RefuelingBoomTrackingUpdater = {
 
     new: func {
@@ -36,6 +86,9 @@ var RefuelingBoomTrackingUpdater = {
             parents: [RefuelingBoomTrackingUpdater]
         };
         m.loop = updateloop.UpdateLoop.new(components: [m], update_period: 0.0, enable: 0);
+        m.chooser = nil;
+        m.callsign = "";
+
         return m;
     },
 
@@ -49,28 +102,61 @@ var RefuelingBoomTrackingUpdater = {
     },
 
     reset: func {
-        me.set_receiver(nil);
+        # Empty
     },
 
-    set_receiver: func (position, callsign=nil) {
-        var had_contact = getprop("/sim/multiplay/generic/int[12]");
-        var contact = position != nil;
+    set_chooser: func (chooser) {
+        me.chooser = chooser;
+    },
 
-        me.receiver = position;
-        setprop("/sim/multiplay/generic/int[12]", contact);
-        setprop("/sim/multiplay/generic/string[19]", contact ? callsign : "");
+    set_receiver: func (callsign) {
+        assert(callsign == nil or callsign != "");
 
-        if (!had_contact and contact) {
+        var contact = callsign != nil;
+        me.callsign = contact ? callsign : "";
+
+        setprop("/refueling/contact/active", contact);
+        setprop("/refueling/contact/callsign", me.callsign);
+
+        if (contact) {
             setprop("/sim/multiplay/chat", "Contact!");
             setprop("/refueling/closest/callsign", "");
+
+            me.chooser.disable();
+            me.enable();
         }
-        if (had_contact and !contact) {
+        else {
             setprop("/sim/multiplay/chat", "Lost contact!");
+
+            me.disable();
+            me.chooser.enable();
         }
     },
 
     update: func (dt) {
-        if (me.receiver == nil) {
+        # Assert that a user is currently being tracked
+        assert(me.callsign != "");
+
+        var mp_node = me._find_mp_aircraft(me.callsign);
+
+        # Stop tracking if current receiver has disappeared
+        if (mp_node == nil) {
+            me.set_receiver(nil);
+            return;
+        }
+
+        # Compute distance between end point of boom (not the origin) and
+        # the AAR point of the receiver
+        var fuel_point = get_aar_point_mp(mp_node);
+        var distance = get_boom_end_point().direct_distance_to(fuel_point);
+
+        # Update the position of the receiver if it is still within maximum contact distance
+        # Otherwise stop tracking the current receiver
+        if (distance <= getprop("/refueling/max-contact-distance-m") + track_margin_m) {
+            me.receiver = fuel_point;
+        }
+        else {
+            me.set_receiver(nil);
             return;
         }
 
@@ -88,9 +174,18 @@ var RefuelingBoomTrackingUpdater = {
         var (yaw, pitch, distance) = math_ext.get_yaw_pitch_distance_inert(boom_origin_2d, boom_origin, me.receiver, heading);
         (yaw, pitch) = math_ext.get_yaw_pitch_body(roll_deg, pitch_deg, yaw, pitch);
 
-        setprop("/refueling/boom-heading-deg", geo.normdeg180(yaw));
-        setprop("/refueling/boom-pitch-deg", -pitch);
-        setprop("/refueling/boom-length", distance);
+        setprop("/refueling/boom/commands/heading-deg", geo.normdeg180(yaw));
+        setprop("/refueling/boom/commands/pitch-deg", -pitch);
+        setprop("/refueling/boom/commands/length-m", distance);
+    },
+
+    _find_mp_aircraft: func (callsign) {
+        # Find and return an MP aircraft that has the given callsign
+
+        if (contains(multiplayer.model.callsign, callsign)) {
+            return multiplayer.model.callsign[callsign].node;
+        };
+        return nil;
     }
 
 };
@@ -135,120 +230,51 @@ var RefuelingBoomPositionUpdater = {
     },
 
     reset: func {
-        me.tracker.set_receiver(nil);
+        # Empty
     },
 
     update: func (dt) {
-        var line_heading_deg = getprop("/engines/engine[9]/n1");
-        var line_pitch_deg   = getprop("/engines/engine[9]/n2");
-        var line_distance    = getprop("/engines/engine[9]/rpm");
+        # Assert that no user is currently being tracked
+        assert(me.tracker.callsign == "");
 
-        var z = -line_distance * math_ext.sin(line_pitch_deg);
-        var a =  line_distance * math_ext.cos(line_pitch_deg);
+        var end_point = get_boom_end_point();
 
-        var x =  a * math_ext.cos(line_heading_deg);
-        var y = -a * math_ext.sin(line_heading_deg);
+        # Check for contact with MP aircraft
+        var mp = me.ai_models.getChildren("multiplayer");
 
-        x = x + getprop("/refueling/origin-x-m");
-        y = y + getprop("/refueling/origin-y-m");
-        z = z + getprop("/refueling/origin-z-m");
+        var closest_point = [9999.0, ""];
 
-        var pitch_deg = getprop("/orientation/pitch-deg");
-        var roll_deg  = getprop("/orientation/roll-deg");
-        var heading_deg = getprop("/orientation/heading-deg");
-
-        # Calculate the actual end point of the refueling boom in the inertial frame
-        var (end_point_2d, end_point) = math_ext.get_point(x, y, z, roll_deg, pitch_deg, heading_deg);
-
-        var callsign = getprop("/sim/multiplay/generic/string[19]");
-
-        if (callsign != "") {
-            var mp_node = me._find_mp_aircraft(callsign);
-            if (mp_node != nil) {
-                # Get AAR point and set receiver
-                var fuel_point = me._get_aar_point_mp(mp_node);
-
-                var distance = end_point.direct_distance_to(fuel_point);
-                if (distance <= getprop("/refueling/max-contact-distance-m") + track_margin_m) {
-                    me.tracker.set_receiver(fuel_point, callsign);
-                }
-                else {
-                    me.tracker.set_receiver(nil);
-                }
+        foreach (var a; mp) {
+            if (!a.getNode("valid", 1).getValue()) {
+                continue;
             }
-            else {
-                me.tracker.set_receiver(nil);
+
+            # Check the MP user's aircraft has a valid fuel point defined
+            var fuel_point = get_aar_point_mp(a);
+            if (fuel_point == nil) {
+                continue;
             }
+
+            var distance = end_point.direct_distance_to(fuel_point);
+            if (distance < closest_point[0]) {
+                var callsign = a.getNode("callsign").getValue();
+                closest_point = [distance, callsign];
+            }
+        }
+
+        var (distance, callsign) = closest_point;
+
+        if (distance <= getprop("/refueling/max-contact-distance-m")) {
+            me.tracker.set_receiver(callsign);
+        }
+        elsif (distance <= getprop("/refueling/max-pre-contact-distance-m")) {
+            setprop("/refueling/closest/distance-m", distance);
+            setprop("/refueling/closest/callsign", callsign);
         }
         else {
-            # Check for contact with MP aircraft
-            var mp = me.ai_models.getChildren("multiplayer");
-
-            var closest_point = [nil, 9999.0, ""];
-
-            foreach (var a; mp) {
-                if (!a.getNode("valid", 1).getValue()) {
-                    continue;
-                }
-
-                var fuel_point = me._get_aar_point_mp(a);
-                if (fuel_point == nil) {
-                    continue;
-                }
-
-                var distance = end_point.direct_distance_to(fuel_point);
-                if (distance < closest_point[1]) {
-                    var callsign = a.getNode("callsign").getValue();
-                    closest_point = [fuel_point, distance, callsign];
-                }
-            }
-
-            if (closest_point[1] <= getprop("/refueling/max-contact-distance-m")) {
-                me.tracker.set_receiver(closest_point[0], closest_point[2]);
-            }
-            elsif (closest_point[1] <= getprop("/refueling/max-pre-contact-distance-m")) {
-                setprop("/refueling/closest/distance-m", closest_point[1]);
-                setprop("/refueling/closest/callsign", closest_point[2]);
-            }
-            else {
-                setprop("/refueling/closest/distance-m", 0.0);
-                setprop("/refueling/closest/callsign", "");
-            }
+            setprop("/refueling/closest/distance-m", 0.0);
+            setprop("/refueling/closest/callsign", "");
         }
-    },
-
-    _find_mp_aircraft: func (callsign) {
-        # Find and return an MP aircraft that has the given callsign
-
-        if (contains(multiplayer.model.callsign, callsign)) {
-            return multiplayer.model.callsign[callsign].node;
-        };
-        return nil;
-    },
-
-    _get_aar_point_mp: func (mp_node) {
-        # Get position of MP aircraft
-        var lat = mp_node.getNode("position/latitude-deg").getValue();
-        var lon = mp_node.getNode("position/longitude-deg").getValue();
-        var alt = mp_node.getNode("position/altitude-ft").getValue();
-        var mp_position = geo.Coord.new().set_latlon(lat, lon, alt * globals.FT2M);
-
-        # Get orientation of MP aircraft
-        var roll_deg = mp_node.getNode("orientation/roll-deg").getValue();
-        var pitch_deg = mp_node.getNode("orientation/pitch-deg").getValue();
-        var heading_deg = mp_node.getNode("orientation/true-heading-deg").getValue();
-
-        # Get offset of AAR point
-        var x = mp_node.getNode("refuel/offset-x-m", 0);
-        var y = mp_node.getNode("refuel/offset-y-m", 0);
-        var z = mp_node.getNode("refuel/offset-z-m", 0);
-
-        if (x == nil or y == nil or z == nil) {
-            return nil;
-        }
-
-        var (fuel_point_2d, fuel_point) = math_ext.get_point(x.getValue(), y.getValue(), z.getValue(), roll_deg, pitch_deg, heading_deg, mp_position);
-        return fuel_point;
     }
 
 };
