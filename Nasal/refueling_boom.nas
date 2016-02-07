@@ -20,7 +20,7 @@ with("updateloop");
 
 var version = {
     major: 5,
-    minor: 0
+    minor: 1
 };
 
 # Period of displaying message containing the distance to the closest callsign
@@ -131,6 +131,25 @@ var RefuelingBoomTrackingUpdater = {
             me.disable();
             me.chooser.enable();
         }
+    },
+
+    disconnect_immediately: func {
+        me.disable();
+        me.chooser.disable();
+
+        if (me.callsign != "") {
+            # Tell receiver to move away from the tanker
+            setprop("/sim/multiplay/chat", "Go go go!");
+        }
+
+        me.callsign = "";
+        setprop("/refueling/contact/active", 0);
+        setprop("/refueling/contact/callsign", me.callsign);
+
+        setprop("/refueling/boom/commands/heading-deg", getprop("/refueling/boom/poses/off/heading-deg"));
+        setprop("/refueling/boom/commands/pitch-deg", getprop("/refueling/boom/poses/off/pitch-deg"));
+        setprop("/refueling/boom/commands/telescope-rate", -getprop("/refueling/boom/limits/telescope-rate"));
+        setprop("/refueling/boom/commands/length-m", getprop("/refueling/boom/poses/off/length-m"));
     },
 
     update: func (dt) {
