@@ -19,8 +19,8 @@ with("math_ext");
 with("updateloop");
 
 var version = {
-    major: 5,
-    minor: 1
+    major: 6,
+    minor: 0
 };
 
 # Period of displaying message containing the distance to the closest callsign
@@ -28,6 +28,14 @@ var callsign_distance_update_period = 2.0;
 
 # Extra margin to prevent bouncing between contact and lost-contact states
 var track_margin_m = 2.0;
+
+# After moving to the ready position, re-enable the boom after a timeout
+var reenable_boom_timeout = 2.0;
+
+# Maximum duration in seconds for any automatic movement
+# After this amount of time, movement rate of the telescope is set to
+# 0 m/s and manual movement is enabled again.
+var automatic_movement_duration = 1.0;
 
 var get_boom_end_point = func {
     var line_heading_deg = getprop("/engines/engine[9]/n1");
@@ -89,6 +97,17 @@ var RefuelingBoomTrackingUpdater = {
         m.chooser = nil;
         m.callsign = "";
 
+        m.enable_boom_timer = maketimer(reenable_boom_timeout, func {
+            m.chooser.enable();
+        });
+        m.enable_boom_timer.singleShot = 1;
+
+        m.stop_automatic_movement_timer = maketimer(automatic_movement_duration, func {
+            setprop("/refueling/boom/commands/telescope-rate", 0.0);
+            setprop("/refueling/automatic-movement", 0);
+        });
+        m.stop_automatic_movement_timer.singleShot = 1;
+
         return m;
     },
 
@@ -118,9 +137,9 @@ var RefuelingBoomTrackingUpdater = {
         setprop("/refueling/contact/active", contact);
         setprop("/refueling/contact/callsign", me.callsign);
 
+        setprop("/refueling/automatic-movement", contact);
         if (contact) {
             setprop("/sim/multiplay/chat", "Contact!");
-            setprop("/refueling/closest/callsign", "");
 
             me.chooser.disable();
             me.enable();
@@ -133,23 +152,51 @@ var RefuelingBoomTrackingUpdater = {
         }
     },
 
-    disconnect_immediately: func {
+    move_to: func (pose) {
+        setprop("/refueling/automatic-movement", 1);
+
+        setprop("/refueling/boom/commands/heading-deg", getprop("/refueling/boom/poses", pose, "heading-deg"));
+        setprop("/refueling/boom/commands/pitch-deg", getprop("/refueling/boom/poses", pose, "pitch-deg"));
+        setprop("/refueling/boom/commands/telescope-rate", -getprop("/refueling/boom/limits/telescope-rate"));
+        setprop("/refueling/boom/commands/length-m", getprop("/refueling/boom/poses", pose, "length-m"));
+
+        me.stop_automatic_movement_timer.restart(automatic_movement_duration);
+    },
+
+    disable_boom: func {
         me.disable();
         me.chooser.disable();
 
+        me.callsign = "";
+        setprop("/refueling/contact/active", 0);
+        setprop("/refueling/contact/callsign", me.callsign);
+    },
+
+    disconnect_fast: func {
         if (me.callsign != "") {
             # Tell receiver to move away from the tanker
             setprop("/sim/multiplay/chat", "Go go go!");
         }
 
-        me.callsign = "";
-        setprop("/refueling/contact/active", 0);
-        setprop("/refueling/contact/callsign", me.callsign);
+        me.disable_boom();
+        me.move_to("off");
+    },
 
-        setprop("/refueling/boom/commands/heading-deg", getprop("/refueling/boom/poses/off/heading-deg"));
-        setprop("/refueling/boom/commands/pitch-deg", getprop("/refueling/boom/poses/off/pitch-deg"));
-        setprop("/refueling/boom/commands/telescope-rate", -getprop("/refueling/boom/limits/telescope-rate"));
-        setprop("/refueling/boom/commands/length-m", getprop("/refueling/boom/poses/off/length-m"));
+    disconnect: func {
+        me.disable_boom();
+        me.move_to("disconnect");
+
+        # Re-enable the chooser after a short timeout
+        me.enable_boom_timer.start();
+    },
+
+    ready: func {
+        if (me.callsign == "") {
+            me.move_to("ready");
+
+            # Re-enable the chooser immediately
+            me.enable_boom_timer.start();
+        }
     },
 
     update: func (dt) {
@@ -246,6 +293,7 @@ var RefuelingBoomPositionUpdater = {
 
     disable: func {
         me.loop.disable();
+        setprop("/refueling/closest/callsign", "");
     },
 
     reset: func {
