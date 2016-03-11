@@ -13,3 +13,4 @@ Modules
    module-refueling-boom
    module-raas
    module-updateloop
+   module-thunder
