@@ -20,6 +20,10 @@ globals.io.import = func (file, module) {
     var path = (globals.io.stat(local_file) != nil)? local_file : resolvepath(file);
 
     if (path == "") {
+        canvas.MessageBox.critical(
+            "Module not found",
+            sprintf("Could not import module '%s' from ExpansionPack.", module)
+        );
         die("File not found: ", file);
     };
 
@@ -47,11 +51,16 @@ var check_version = func (module, major, minor) {
     var version_ok = (version_major == major and version_minor >= minor);
 
     if (!version_ok) {
-        var format  = "Version %d.%d of module '%s' required, but version %d.%d provided by ExpansionPack";
-        var message = sprintf(format, major, minor, module, version_major, version_minor);
+        var format  = "Module '%s' requires version %d.%d, but ExpansionPack provides version %d.%d";
+        var message = sprintf(format, module, major, minor, version_major, version_minor);
 
         with("logger");
         logger.error(message);
+
+        canvas.MessageBox.critical(
+            "Incompatible module version",
+            message ~ "."
+        );
 
         # Continuing with an old and incompatible version of the module is
         # stupid and may cause strange bugs.

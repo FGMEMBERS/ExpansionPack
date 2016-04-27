@@ -139,3 +139,48 @@ var get_point = func (x, y, z, roll_deg, pitch_deg, heading_deg, point=nil) {
 
     return [point_2d, point];
 };
+
+var get_yaw_pitch_body = func (roll_deg, pitch_deg, object_yaw_deg, object_pitch_deg, yaw_offset=0) {
+    # Return a tuple containing the yaw, pitch
+
+    var z = math_ext.sin(object_pitch_deg);
+    var a = math_ext.cos(object_pitch_deg);
+
+    var x = -a * math_ext.cos(object_yaw_deg);
+    var y =  a * math_ext.sin(object_yaw_deg);
+
+    # Convert the position in the inertial frame to the body frame
+    (x, y, z) = math_ext.rotate_to_body_zyx(x, y, z, -roll_deg, pitch_deg, 0.0);
+
+    var result_distance_2d = math.sqrt(math.pow(x, 2) + math.pow(y, 2));
+
+    # Calculate heading and pitch of object in the body frame
+    var result_heading = -math_ext.atan(y, x);
+    var result_pitch   =  math_ext.atan(-z, result_distance_2d);
+
+    return [geo.normdeg(result_heading) - yaw_offset, -result_pitch];
+};
+
+var get_yaw_pitch_distance_inert = func (position_2d, position, target_position, heading, f=nil) {
+    # Return a tuple containing the relative heading, pitch, and distance
+    # from the given source to the target position in the inertial
+    # frame (world). The relative heading and pitch do not depend on the
+    # current roll and pitch angles of the aircraft.
+
+    var target_position_alt = target_position.alt();
+    target_position.set_alt(position_2d.alt());
+
+    # Calculate heading in the inertial frame
+    var heading_deg = positioned.courseAndDistance(position_2d, target_position)[0] - heading;
+    var distance_2d = position_2d.direct_distance_to(target_position);
+
+    target_position.set_alt(target_position_alt);
+
+    # Calculate pitch and distance in the inertial frame
+    if (f == nil)
+        f = math_ext.atan;
+    var pitch_deg  = f(target_position.alt() - position.alt(), distance_2d);
+    var distance_m = position.direct_distance_to(target_position);
+
+    return [heading_deg, pitch_deg, distance_m];
+};
